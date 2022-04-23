@@ -2,7 +2,7 @@
 <div>
   <button @click="expandAll">Expand All</button>
   <button @click="collapseAll">Collapse All</button>
-  <vue-good-table
+  <data-table
     :columns="columns"
     :rows="rows"
     :line-numbers="true"
@@ -37,11 +37,12 @@
         {{props.formattedRow[props.column.field]}}
       </span>
     </template> -->
-  </vue-good-table>
+  </data-table>
 </div>
 </template>
 
 <script>
+import DataTable from '../src/components/DataTable.vue'
 export default {
   name: 'grouped-table',
   props: [],
@@ -135,11 +136,12 @@ export default {
   mounted() {
   },
   components: {
+    DataTable,
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .row-style{
     background-color: red;
   }

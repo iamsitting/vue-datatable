@@ -1,6 +1,6 @@
 <template>
 <div>
-  <vue-good-table
+  <data-table
     :columns="columns"
     :rows="rows"
     :totalRows="totalRecords"
@@ -20,11 +20,12 @@
       enabled: false,
     }"
     styleClass="vgt-table condensed bordered striped">
-  </vue-good-table>
+  </data-table>
 </div>
 </template>
 
 <script>
+import DataTable from '../src/components/DataTable.vue'
 export default {
   name: 'remote-table',
   props: [],
@@ -242,10 +243,11 @@ export default {
     this.loadItems();
   },
   components: {
+    DataTable,
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 
 </style>
