@@ -32,6 +32,7 @@
     "core-js": "^3.8.3",
     "date-fns": "^2.25.0",
     "lodash.isequal": "^4.5.0",
+    "uikit": "^3.13.10",
     "vue": "3.2.29"
   },
   "devDependencies": {

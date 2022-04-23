@@ -927,6 +927,11 @@ typescript@4.1.6:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.6.tgz#1becd85d77567c3c741172339e93ce2e69932138"
   integrity sha512-pxnwLxeb/Z5SP80JDRzVjh58KsM6jZHRAOtTpS7sXLS4ogXNKC9ANxHHZqLLeVHZN35jCtI4JdmLLbLiC1kBow==
 
+uikit@^3.13.10:
+  version "3.13.10"
+  resolved "https://registry.yarnpkg.com/uikit/-/uikit-3.13.10.tgz#cb69a6a734f3442a5861648043dd59476cef8b89"
+  integrity sha512-kxSPDT7HiwiQW3e++V8LfIe7/E1L5viPXH4P2yxyDIaU6CP1gWh2Ggy6skc/ziZNlY3CqI2JJkOU2/5zd+NaVw==
+
 upath@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/upath/-/upath-2.0.1.tgz#50c73dea68d6f6b990f51d279ce6081665d61a8b"

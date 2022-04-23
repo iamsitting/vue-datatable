@@ -11,7 +11,7 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   setup(props) {
     const downloadCSV = (csv: string, filename: string) => {
-    // CSV file
+      // CSV file
       const csvFile = new Blob([csv], { type: 'text/csv' });
 
       // Download link

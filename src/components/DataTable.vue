@@ -1,6 +1,5 @@
 <template>
-  <div
-    :class="[wrapStyleClasses, 'uk-margin-bottom uk-margin-top']">
+  <div :class="[wrapStyleClasses, 'uk-margin-bottom uk-margin-top']">
     <div v-if="isLoading" class="vgt-loading vgt-center-align">
       <slot name="loadingContent">
         <span class="vgt-loading__content">
@@ -8,60 +7,30 @@
         </span>
       </slot>
     </div>
-    <div class="vgt-inner-wrap"
-      :class="{'is-loading': isLoading}">
-      <slot
-        v-if="paginate && paginateOnTop"
-        name="pagination-top"
-        :pageChanged="pageChanged"
-        :perPageChanged="perPageChanged"
-        :total="totalRows || totalRowCount"
-      >
-        <dt-pagination
-          ref="paginationTop"
-          @page-changed="pageChanged"
-          @per-page-changed="perPageChanged"
-          :perPage="perPage"
-          :rtl="rtl"
-          :total="totalRows || totalRowCount"
-          :mode="paginationMode"
-          :nextText="nextText"
-          :prevText="prevText"
-          :rowsPerPageText="rowsPerPageText"
+    <div class="vgt-inner-wrap" :class="{ 'is-loading': isLoading }">
+      <slot v-if="paginate && paginateOnTop" name="pagination-top" :pageChanged="pageChanged"
+        :perPageChanged="perPageChanged" :total="totalRows || totalRowCount">
+        <dt-pagination ref="paginationTop" @page-changed="pageChanged" @per-page-changed="perPageChanged"
+          :perPage="perPage" :rtl="rtl" :total="totalRows || totalRowCount" :mode="paginationMode" :nextText="nextText"
+          :prevText="prevText" :rowsPerPageText="rowsPerPageText"
           :perPageDropdownEnabled="paginationOptions.perPageDropdownEnabled"
-          :customRowsPerPageDropdown="customRowsPerPageDropdown"
-          :paginateDropdownAllowAll="paginateDropdownAllowAll"
-          :ofText="ofText"
-          :pageText="pageText"
-          :allText="allText"
-          :info-fn="paginationInfoFn"
-        ></dt-pagination>
+          :customRowsPerPageDropdown="customRowsPerPageDropdown" :paginateDropdownAllowAll="paginateDropdownAllowAll"
+          :ofText="ofText" :pageText="pageText" :allText="allText" :info-fn="paginationInfoFn"></dt-pagination>
       </slot>
       <export-button v-if="canExport" tableId="vgt-table"></export-button>
-      <vgt-global-search
-        v-on:keyup="searchTableOnKeyUp"
-        v-on:enter="searchTableOnEnter"
-        :value="globalSearchTerm"
-        @input="globalSearchTerm = $event"
-        :search-enabled="searchEnabled && externalSearchQuery == null"
-        :global-search-placeholder="searchPlaceholder"
-      >
+      <vgt-global-search v-on:keyup="searchTableOnKeyUp" v-on:enter="searchTableOnEnter" :value="globalSearchTerm"
+        @input="globalSearchTerm = $event" :search-enabled="searchEnabled && externalSearchQuery == null"
+        :global-search-placeholder="searchPlaceholder">
         <template #internal-table-actions v-if="$slots['table-actions']">
           <slot name="table-actions">
           </slot>
         </template>
       </vgt-global-search>
-      <div
-        v-if="selectedRowCount && !disableSelectInfo"
-        class="vgt-selection-info-row clearfix"
-        :class="selectionInfoClass"
-      >
-        {{selectionInfo}}
-        <a
-          href=""
-          @click.prevent="unselectAllInternal(true)"
-        >
-          {{clearSelectionText}}
+      <div v-if="selectedRowCount && !disableSelectInfo" class="vgt-selection-info-row clearfix"
+        :class="selectionInfoClass">
+        {{ selectionInfo }}
+        <a href="" @click.prevent="unselectAllInternal(true)">
+          {{ clearSelectionText }}
         </a>
         <div class="vgt-selection-info-row__actions vgt-pull-right">
           <slot name="selected-row-actions">
@@ -69,187 +38,80 @@
         </div>
       </div>
       <div class="vgt-fixed-header">
-        <table
-          id="vgt-table"
-          v-if="fixedHeader"
-          :class="[tableStyles, 'uk-table uk-table-divider uk-margin-remove-top']"
-        >
-        <colgroup>
-          <col v-for="(column, index) in columns" :key="index" :id="`col-${index}`">
-        </colgroup>
+        <table id="vgt-table" v-if="fixedHeader"
+          :class="[tableStyles, 'uk-table uk-table-divider uk-margin-remove-top']">
+          <colgroup>
+            <col v-for="(column, index) in columns" :key="index" :id="`col-${index}`">
+          </colgroup>
           <!-- Table header -->
-          <vgt-table-header
-            ref="table-header-secondary"
-            v-on:toggle-select-all="toggleSelectAll"
-            v-on:sort-change="changeSort"
-            @filter-changed="filterRows"
-            :columns="columns"
-            :line-numbers="lineNumbers"
-            :selectable="selectable"
-            :all-selected="allSelected"
-            :all-selected-indeterminate="allSelectedIndeterminate"
-            :mode="mode"
-            :sortable="sortable"
-            :multiple-column-sort="multipleColumnSort"
-            :typed-columns="typedColumns"
-            :getClasses="getClasses"
-            :searchEnabled="searchEnabled"
-            :paginated="paginated"
-            :table-ref="$refs.table"
-          >
+          <vgt-table-header ref="table-header-secondary" v-on:toggle-select-all="toggleSelectAll"
+            v-on:sort-change="changeSort" @filter-changed="filterRows" :columns="columns" :line-numbers="lineNumbers"
+            :selectable="selectable" :all-selected="allSelected" :all-selected-indeterminate="allSelectedIndeterminate"
+            :mode="mode" :sortable="sortable" :multiple-column-sort="multipleColumnSort" :typed-columns="typedColumns"
+            :getClasses="getClasses" :searchEnabled="searchEnabled" :paginated="paginated" :table-ref="$refs.table">
             <template #table-column="slotProps">
-              <slot
-                name="table-column"
-                :column="slotProps.column"
-              >
-                <span>{{slotProps.column.label}}</span>
+              <slot name="table-column" :column="slotProps.column">
+                <span>{{ slotProps.column.label }}</span>
               </slot>
             </template>
-            <template #column-filter="slotProps"
-            >
-              <slot
-                  name="column-filter"
-                  :column="slotProps.column"
-                  :updateFilters="slotProps.updateFilters"
-              ></slot>
+            <template #column-filter="slotProps">
+              <slot name="column-filter" :column="slotProps.column" :updateFilters="slotProps.updateFilters"></slot>
             </template>
           </vgt-table-header>
         </table>
       </div>
-      <div
-        :class="{'vgt-responsive': responsive}"
-        :style="wrapperStyles"
-      >
-        <table
-          id="vgt-table"
-          ref="table"
-          :class="[tableStyles, 'uk-table uk-table-divider uk-margin-remove-top']"
-        >
-        <colgroup>
-          <col v-for="(column, index) in columns" :key="index" :id="`col-${index}`">
-        </colgroup>
+      <div :class="{ 'vgt-responsive': responsive }" :style="wrapperStyles">
+        <table id="vgt-table" ref="table" :class="[tableStyles, 'uk-table uk-table-divider uk-margin-remove-top']">
+          <colgroup>
+            <col v-for="(column, index) in columns" :key="index" :id="`col-${index}`">
+          </colgroup>
           <!-- Table header -->
-          <vgt-table-header
-            ref="table-header-primary"
-            v-on:toggle-select-all="toggleSelectAll"
-            v-on:sort-change="changeSort"
-            @filter-changed="filterRows"
-            :columns="columns"
-            :line-numbers="lineNumbers"
-            :selectable="selectable"
-            :all-selected="allSelected"
-            :all-selected-indeterminate="allSelectedIndeterminate"
-            :mode="mode"
-            :sortable="sortable"
-            :multiple-column-sort="multipleColumnSort"
-            :typed-columns="typedColumns"
-            :getClasses="getClasses"
-            :searchEnabled="searchEnabled"
-          >
-            <template #table-column="slotProps"
-            >
-              <slot
-                name="table-column"
-                :column="slotProps.column"
-              >
-                <span>{{slotProps.column.label}}</span>
+          <vgt-table-header ref="table-header-primary" v-on:toggle-select-all="toggleSelectAll"
+            v-on:sort-change="changeSort" @filter-changed="filterRows" :columns="columns" :line-numbers="lineNumbers"
+            :selectable="selectable" :all-selected="allSelected" :all-selected-indeterminate="allSelectedIndeterminate"
+            :mode="mode" :sortable="sortable" :multiple-column-sort="multipleColumnSort" :typed-columns="typedColumns"
+            :getClasses="getClasses" :searchEnabled="searchEnabled">
+            <template #table-column="slotProps">
+              <slot name="table-column" :column="slotProps.column">
+                <span>{{ slotProps.column.label }}</span>
               </slot>
             </template>
-            <template #column-filter="slotProps"
-            >
-              <slot
-                name="column-filter"
-                :column="slotProps.column"
-                :updateFilters="slotProps.updateFilters"
-              ></slot>
+            <template #column-filter="slotProps">
+              <slot name="column-filter" :column="slotProps.column" :updateFilters="slotProps.updateFilters"></slot>
             </template>
           </vgt-table-header>
 
           <!-- Table body starts here -->
-          <tbody
-            v-for="(headerRow, hIndex) in paginated"
-            :key="hIndex"
-          >
+          <tbody v-for="(headerRow, hIndex) in paginated" :key="hIndex">
             <!-- if group row header is at the top -->
-            <vgt-header-row
-              v-if="groupHeaderOnTop"
-              @vgtExpand="toggleExpand(headerRow[rowKeyField])"
-              :header-row="headerRow"
-              :columns="columns"
-              :line-numbers="lineNumbers"
-              :selectable="selectable"
-              :select-all-by-group="selectAllByGroup"
-              :collapsable="groupOptions.collapsable"
-              :collect-formatted="collectFormatted"
-              :formatted-row="formattedRow"
-              :class="getRowStyleClass(headerRow)"
-              :get-classes="getClasses"
-              :full-colspan="fullColspan"
-              :groupIndex="hIndex"
-              v-on:select-group-change="toggleSelectGroup($event, headerRow)"
-            >
-              <template
-                v-if="hasHeaderRowTemplate"
-                #table-header-row="slotProps"
-              >
-                <slot
-                  name="table-header-row"
-                  :column="slotProps.column"
-                  :formattedRow="slotProps.formattedRow"
-                  :row="slotProps.row"
-                >
+            <vgt-header-row v-if="groupHeaderOnTop" @vgtExpand="toggleExpand(headerRow[rowKeyField])"
+              :header-row="headerRow" :columns="columns" :line-numbers="lineNumbers" :selectable="selectable"
+              :select-all-by-group="selectAllByGroup" :collapsable="groupOptions.collapsable"
+              :collect-formatted="collectFormatted" :formatted-row="formattedRow" :class="getRowStyleClass(headerRow)"
+              :get-classes="getClasses" :full-colspan="fullColspan" :groupIndex="hIndex"
+              v-on:select-group-change="toggleSelectGroup($event, headerRow)">
+              <template v-if="hasHeaderRowTemplate" #table-header-row="slotProps">
+                <slot name="table-header-row" :column="slotProps.column" :formattedRow="slotProps.formattedRow"
+                  :row="slotProps.row">
                 </slot>
               </template>
             </vgt-header-row>
             <!-- normal rows here. we loop over all rows -->
-            <template
-              v-for="(row, index) in headerRow.children"
-            >
-              <tr
-                v-if="groupOptions.collapsable ? headerRow.vgtIsExpanded : true"
-                :key="row.originalIndex"
-
-                :class="getRowStyleClass(row)"
-                @mouseenter="onMouseenter(row, index)"
-                @mouseleave="onMouseleave(row, index)"
-                @dblclick="onRowDoubleClicked(row, index, $event)"
-                @click="onRowClicked(row, index, $event)"
-                @auxclick="onRowAuxClicked(row, index, $event)"
-              >
-                <th
-                  v-if="lineNumbers"
-                  class="line-numbers"
-                >
+            <template v-for="(row, index) in headerRow.children">
+              <tr v-if="groupOptions.collapsable ? headerRow.vgtIsExpanded : true" :key="row.originalIndex"
+                :class="getRowStyleClass(row)" @mouseenter="onMouseenter(row, index)"
+                @mouseleave="onMouseleave(row, index)" @dblclick="onRowDoubleClicked(row, index, $event)"
+                @click="onRowClicked(row, index, $event)" @auxclick="onRowAuxClicked(row, index, $event)">
+                <th v-if="lineNumbers" class="line-numbers">
                   {{ getCurrentIndex(row.originalIndex) }}
                 </th>
-                <th
-                  v-if="selectable"
-                  @click.stop="onCheckboxClicked(row, index, $event)"
-                  class="vgt-checkbox-col"
-                >
-                  <input
-                    type="checkbox"
-                    :disabled="row.vgtDisabled"
-                    :checked="row.vgtSelected"
-                  />
+                <th v-if="selectable" @click.stop="onCheckboxClicked(row, index, $event)" class="vgt-checkbox-col">
+                  <input type="checkbox" :disabled="row.vgtDisabled" :checked="row.vgtSelected" />
                 </th>
-                <template
-                  v-for="(column, i) in columns"
-                >
-                  <td
-                    :key="i"
-                    v-if="!column.hidden && column.field"
-                    @click="onCellClicked(row, column, index, $event)"
-                    :class="getClasses(i, 'td', row)"
-                    v-bind:data-label="compactMode ? column.label : undefined"
-                  >
-                    <slot
-                      name="table-row"
-                      :row="row"
-                      :column="column"
-                      :formattedRow="formattedRow(row)"
-                      :index="index"
-                    >
+                <template v-for="(column, i) in columns">
+                  <td :key="i" v-if="!column.hidden && column.field" @click="onCellClicked(row, column, index, $event)"
+                    :class="getClasses(i, 'td', row)" v-bind:data-label="compactMode ? column.label : undefined">
+                    <slot name="table-row" :row="row" :column="column" :formattedRow="formattedRow(row)" :index="index">
                       <span v-if="!column.html">
                         {{ collectFormatted(row, column) }}
                       </span>
@@ -261,30 +123,14 @@
               </tr>
             </template>
             <!-- if group row header is at the bottom -->
-            <vgt-header-row
-              v-if="groupHeaderOnBottom"
-              :header-row="headerRow"
-              :columns="columns"
-              :line-numbers="lineNumbers"
-              :selectable="selectable"
-              :select-all-by-group="selectAllByGroup"
-              :collect-formatted="collectFormatted"
-              :formatted-row="formattedRow"
-              :get-classes="getClasses"
-              :full-colspan="fullColspan"
-              :groupIndex="index"
-              v-on:select-group-change="toggleSelectGroup($event, headerRow)"
-            >
-              <template
-                v-if="hasHeaderRowTemplate"
-                #table-header-row="slotProps"
-              >
-                <slot
-                  name="table-header-row"
-                  :column="slotProps.column"
-                  :formattedRow="slotProps.formattedRow"
-                  :row="slotProps.row"
-                >
+            <vgt-header-row v-if="groupHeaderOnBottom" :header-row="headerRow" :columns="columns"
+              :line-numbers="lineNumbers" :selectable="selectable" :select-all-by-group="selectAllByGroup"
+              :collect-formatted="collectFormatted" :formatted-row="formattedRow" :get-classes="getClasses"
+              :full-colspan="fullColspan" :groupIndex="index"
+              v-on:select-group-change="toggleSelectGroup($event, headerRow)">
+              <template v-if="hasHeaderRowTemplate" #table-header-row="slotProps">
+                <slot name="table-header-row" :column="slotProps.column" :formattedRow="slotProps.formattedRow"
+                  :row="slotProps.row">
                 </slot>
               </template>
             </vgt-header-row>
@@ -307,32 +153,14 @@
         <slot name="table-actions-bottom">
         </slot>
       </div>
-      <slot
-        v-if="paginate && paginateOnBottom"
-        name="pagination-bottom"
-        :pageChanged="pageChanged"
-        :perPageChanged="perPageChanged"
-        :total="totalRows || totalRowCount"
-      >
-        <dt-pagination
-          ref="paginationBottom"
-          @page-changed="pageChanged"
-          @per-page-changed="perPageChanged"
-          :perPage="perPage"
-          :rtl="rtl"
-          :total="totalRows || totalRowCount"
-          :mode="paginationMode"
-          :nextText="nextText"
-          :prevText="prevText"
-          :rowsPerPageText="rowsPerPageText"
+      <slot v-if="paginate && paginateOnBottom" name="pagination-bottom" :pageChanged="pageChanged"
+        :perPageChanged="perPageChanged" :total="totalRows || totalRowCount">
+        <dt-pagination ref="paginationBottom" @page-changed="pageChanged" @per-page-changed="perPageChanged"
+          :perPage="perPage" :rtl="rtl" :total="totalRows || totalRowCount" :mode="paginationMode" :nextText="nextText"
+          :prevText="prevText" :rowsPerPageText="rowsPerPageText"
           :perPageDropdownEnabled="paginationOptions.perPageDropdownEnabled"
-          :customRowsPerPageDropdown="customRowsPerPageDropdown"
-          :paginateDropdownAllowAll="paginateDropdownAllowAll"
-          :ofText="ofText"
-          :pageText="pageText"
-          :allText="allText"
-          :info-fn="paginationInfoFn"
-        ></dt-pagination>
+          :customRowsPerPageDropdown="customRowsPerPageDropdown" :paginateDropdownAllowAll="paginateDropdownAllowAll"
+          :ofText="ofText" :pageText="pageText" :allText="allText" :info-fn="paginationInfoFn"></dt-pagination>
       </slot>
     </div>
   </div>
@@ -811,12 +639,12 @@ export default {
                 if (sortFn && typeof sortFn === 'function') {
                   sortValue = sortValue
                     || sortFn(xvalue, yvalue, column, xRow, yRow)
-                      * (srt.type === SORT_TYPES.Descending ? -1 : 1);
+                    * (srt.type === SORT_TYPES.Descending ? -1 : 1);
                 } else {
                   //* else we use our own sort
                   sortValue = sortValue
                     || column.typeDef.compare(xvalue, yvalue, column)
-                      * (srt.type === SORT_TYPES.Descending ? -1 : 1);
+                    * (srt.type === SORT_TYPES.Descending ? -1 : 1);
                 }
               }
             }
@@ -1302,7 +1130,7 @@ export default {
                   this.columnFilters[fieldKey(col.field)],
                   false,
                   col.filterOptions
-                    && typeof col.filterOptions.filterDropdownItems === 'object',
+                  && typeof col.filterOptions.filterDropdownItems === 'object',
                 );
               });
               // should we remove the header?
@@ -1545,6 +1373,7 @@ export default {
 };
 </script>
 <style lang='less'>
+@import 'uikit/dist/css/uikit.min.css';
 @border-color: #DCDFE6;
 @notify-bg-color: #fdf9e8;
 @notify-fg-color: #b38d28;
@@ -1556,32 +1385,38 @@ export default {
 @thead-bg-color-2: #F1F3F6;
 
 /* bordered */
-.vgt-table{
-  &.bordered td, &.bordered th {
-      border: 1px solid @border-color;
+.vgt-table {
+
+  &.bordered td,
+  &.bordered th {
+    border: 1px solid @border-color;
   }
-  &.bordered th.vgt-row-header{
+
+  &.bordered th.vgt-row-header {
     border-bottom: 3px solid @border-color;
   }
 }
 
 /* condensed */
-.vgt-table{
-  &.condensed td, &.condensed th.vgt-row-header{
+.vgt-table {
+
+  &.condensed td,
+  &.condensed th.vgt-row-header {
     padding: .4em .4em .4em .4em;
   }
 }
 
-.vgt-selection-info-row{
+.vgt-selection-info-row {
   background: @notify-bg-color;
   padding: 5px 16px;
   font-size: 13px;
-  border-top:  1px solid @border-color;
-  border-left:  1px solid @border-color;
-  border-right:  1px solid @border-color;
+  border-top: 1px solid @border-color;
+  border-left: 1px solid @border-color;
+  border-right: 1px solid @border-color;
   color: lighten(@notify-fg-color, 10%);
   font-weight: bold;
-  a{
+
+  a {
     font-weight: bold;
     display: inline-block;
     margin-left: 10px;
@@ -1589,12 +1424,13 @@ export default {
 }
 
 /* loading */
-.vgt-loading{
+.vgt-loading {
   position: absolute;
   width: 100%;
   z-index: 10;
   margin-top: 117px;
-  &__content{
+
+  &__content {
     background-color: lighten(@link-color, 25%);
     color: @link-color;
     padding: 7px 30px;
@@ -1602,7 +1438,7 @@ export default {
   }
 }
 
-.vgt-inner-wrap.is-loading{
+.vgt-inner-wrap.is-loading {
   opacity: 0.5;
   pointer-events: none;
 }
@@ -1620,15 +1456,19 @@ export default {
       display: block;
       width: 100%;
     }
+
     thead {
       display: none;
     }
+
     tr {
       margin-bottom: 15px;
     }
+
     td {
       text-align: right;
       position: relative;
+
       &:before {
         content: attr(data-label);
         position: relative;
@@ -1644,24 +1484,26 @@ export default {
 }
 
 /* striped */
-.vgt-table{
+.vgt-table {
   &.striped tbody tr:nth-of-type(odd) {
     background-color: rgba(51, 68, 109, 0.03);
   }
 }
 
-.vgt-wrap__actions-footer{
+.vgt-wrap__actions-footer {
   border: 1px solid @border-color;
 }
 
 /* rtl */
-.vgt-wrap.rtl{
+.vgt-wrap.rtl {
   direction: rtl;
 
-  .vgt-table{
-    thead th, &.condensed thead th {
-      padding-left:  1.5em;
-      padding-right:  .75em;
+  .vgt-table {
+
+    thead th,
+    &.condensed thead th {
+      padding-left: 1.5em;
+      padding-right: .75em;
     }
   }
 }
@@ -1669,12 +1511,13 @@ export default {
 /* th */
 @sort-chevron-width: 5px;
 
-.vgt-table{
-  & th{
+.vgt-table {
+  & th {
     padding: .75em 1.5em .75em .75em;
     vertical-align: middle;
     position: relative;
-    &.sortable{
+
+    &.sortable {
       button {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -1686,10 +1529,12 @@ export default {
         left: 0;
         width: 100%;
         height: 100%;
-        &:focus{
+
+        &:focus {
           outline: none;
         }
-        &:after{
+
+        &:after {
           content: '';
           position: absolute;
           height: 0px;
@@ -1701,7 +1546,8 @@ export default {
           border-right: @sort-chevron-width solid transparent;
           border-bottom: @sort-chevron-width solid @chevron-color;
         }
-        &:before{
+
+        &:before {
           content: '';
           position: absolute;
           height: 0px;
@@ -1716,7 +1562,9 @@ export default {
       }
     }
   }
-  & th.line-numbers, & th.vgt-checkbox-col {
+
+  & th.line-numbers,
+  & th.vgt-checkbox-col {
     padding: 0 .75em 0 .75em;
     color: @text-color;
     border-right: 1px solid @border-color;
@@ -1725,20 +1573,23 @@ export default {
     text-align: center;
     background: linear-gradient(@thead-bg-color-1, @thead-bg-color-2);
   }
+
   & th.filter-th {
     padding: .75em .75em .75em .75em;
   }
 
-  th.vgt-row-header{
+  th.vgt-row-header {
     border-bottom: 2px solid @border-color;
     border-top: 2px solid @border-color;
     background-color: lighten(@border-color, 10%);
+
     .triangle {
       width: 24px;
       height: 24px;
       border-radius: 15%;
       position: relative;
       margin: 0px 8px;
+
       &:after {
         content: '';
         position: absolute;
@@ -1752,28 +1603,32 @@ export default {
         margin-left: -3px;
         transition: 0.3s ease transform;
       }
+
       &.expand:after {
         transform: rotate(90deg);
       }
     }
   }
 
-  thead th{
+  thead th {
     color: @text-color;
     vertical-align: bottom;
-    border-bottom:  1px solid @border-color;
+    border-bottom: 1px solid @border-color;
     padding-right: 1.5em;
     background: linear-gradient(@thead-bg-color-1, @thead-bg-color-2);
-    &.vgt-checkbox-col{
+
+    &.vgt-checkbox-col {
       vertical-align: middle;
     }
+
     &.sorting-asc button {
-      &:after{
+      &:after {
         border-bottom: @sort-chevron-width solid @link-color;
       }
     }
+
     &.sorting-desc button {
-      &:before{
+      &:before {
         border-top: @sort-chevron-width solid @link-color;
       }
     }
@@ -1782,24 +1637,24 @@ export default {
 
 /* Utility styles
 ************************************************/
-.vgt-right-align{
+.vgt-right-align {
   text-align: right;
 }
 
-.vgt-left-align{
+.vgt-left-align {
   text-align: left;
 }
 
-.vgt-center-align{
+.vgt-center-align {
   text-align: center;
 }
 
-.vgt-pull-left{
-  float:  left !important;
+.vgt-pull-left {
+  float: left !important;
 }
 
-.vgt-pull-right{
-  float:  right !important;
+.vgt-pull-right {
+  float: right !important;
 }
 
 .vgt-clearfix::after {
@@ -1814,7 +1669,7 @@ export default {
   position: relative;
 }
 
-.vgt-text-disabled{
+.vgt-text-disabled {
   color: @secondary-text-color;
 }
 
@@ -1829,10 +1684,11 @@ export default {
 }
 
 // wrap
-.vgt-wrap{
+.vgt-wrap {
   position: relative;
 }
-.vgt-fixed-header{
+
+.vgt-fixed-header {
   position: absolute;
   z-index: 10;
   overflow-x: auto;
