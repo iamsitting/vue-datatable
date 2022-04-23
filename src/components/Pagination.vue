@@ -2,53 +2,29 @@
   <div class="vgt-wrap__footer vgt-clearfix">
     <div v-if="perPageDropdownEnabled" class="footer__row-count vgt-pull-left">
       <form>
-        <label :for="id" class="footer__row-count__label">{{rowsPerPageText}}:</label>
-        <select
-          :id="id"
-          autocomplete="off"
-          name="perPageSelect"
-          class="footer__row-count__select"
-          v-model="currentPerPage"
-          @change="perPageChanged"
-          aria-controls="vgt-table">
-          <option
-            v-for="(option, idx) in rowsPerPageOptions"
-            :key="idx"
-            :value="option">
+        <label :for="id" class="footer__row-count__label">{{ rowsPerPageText }}:</label>
+        <select :id="id" autocomplete="off" name="perPageSelect" class="footer__row-count__select"
+          v-model="currentPerPage" @change="perPageChanged" aria-controls="vgt-table">
+          <option v-for="(option, idx) in rowsPerPageOptions" :key="idx" :value="option">
             {{ option }}
           </option>
-          <option v-if="paginateDropdownAllowAll" :value="total">{{allText}}</option>
+          <option v-if="paginateDropdownAllowAll" :value="total">{{ allText }}</option>
         </select>
       </form>
     </div>
     <div class="footer__navigation vgt-pull-right">
-      <pagination-page-info
-        @page-changed="changePage"
-        :total-records="total"
-        :last-page="pagesCount"
-        :current-page="currentPage"
-        :current-per-page="currentPerPage"
-        :of-text="ofText"
-        :page-text="pageText"
-        :info-fn="infoFn"
-        :mode="mode" />
-      <button
-        type="button"
-        aria-controls="vgt-table"
-        class="footer__navigation__page-btn"
-        :class="{ disabled: !prevIsPossible }"
-        @click.prevent.stop="previousPage">
+      <pagination-page-info @page-changed="changePage" :total-records="total" :last-page="pagesCount"
+        :current-page="currentPage" :current-per-page="currentPerPage" :of-text="ofText" :page-text="pageText"
+        :info-fn="infoFn" :mode="mode" />
+      <button type="button" aria-controls="vgt-table" class="footer__navigation__page-btn"
+        :class="{ disabled: !prevIsPossible }" @click.prevent.stop="previousPage">
         <span aria-hidden="true" :class="['chevron', { 'left': !rtl, 'right': rtl }]"></span>
-        <span>{{prevText}}</span>
+        <span>{{ prevText }}</span>
       </button>
 
-      <button
-        type="button"
-        aria-controls="vgt-table"
-        class="footer__navigation__page-btn"
-        :class="{ disabled: !nextIsPossible }"
-        @click.prevent.stop="nextPage">
-        <span>{{nextText}}</span>
+      <button type="button" aria-controls="vgt-table" class="footer__navigation__page-btn"
+        :class="{ disabled: !nextIsPossible }" @click.prevent.stop="nextPage">
+        <span>{{ nextText }}</span>
         <span aria-hidden="true" :class="['chevron', { 'right': !rtl, 'left': rtl }]"></span>
       </button>
     </div>
@@ -90,7 +66,7 @@ export default defineComponent({
     ofText: { type: String, default: 'of' },
     pageText: { type: String, default: 'page' },
     allText: { type: String, default: 'All' },
-    infoFn: { type: Function as PropType<CallableFunction|null>, default: null },
+    infoFn: { type: Function as PropType<CallableFunction | null>, default: null },
   },
   setup(props, ctx) {
     const getId = () => `vgt-select-rpp-${Math.floor(Math.random() * Date.now())}`;
@@ -166,7 +142,7 @@ export default defineComponent({
       //* if there's a custom dropdown then we use that
       if (props.customRowsPerPageDropdown !== null
         && (Array.isArray(props.customRowsPerPageDropdown)
-        && props.customRowsPerPageDropdown.length !== 0)) {
+          && props.customRowsPerPageDropdown.length !== 0)) {
         data.rowsPerPageOptions = JSON.parse(JSON.stringify(props.customRowsPerPageDropdown));
       } else {
         //* otherwise we use the default rows per page dropdown
@@ -234,23 +210,28 @@ export default defineComponent({
 @thead-bg-color-2: #F1F3F6;
 @link-color: #409eff;
 
-.vgt-wrap__footer{
+.vgt-wrap__footer {
   color: @text-color;
-  font-size:  @footer-font-size;
-  padding:  1em;
+  font-size: @footer-font-size;
+  padding: 1em;
   border: 1px solid @border-color;
   background: linear-gradient(@thead-bg-color-1, @thead-bg-color-2);
-  .footer__row-count{
+
+  .footer__row-count {
     position: relative;
     padding-right: 3px;
-    &__label, &__select{
+
+    &__label,
+    &__select {
       display: inline-block;
       vertical-align: middle;
     }
-    &__label{
+
+    &__label {
       font-size: @footer-font-size;
     }
-    &__select{
+
+    &__select {
       font-size: @footer-font-size;
       background-color: transparent;
       width: auto;
@@ -259,22 +240,25 @@ export default defineComponent({
       border-radius: 0;
       height: auto;
       margin-left: 8px;
-      color:  @text-color;
+      color: @text-color;
       font-weight: bold;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
       padding-right: 15px;
       padding-left: 5px;
-      &::-ms-expand{
+
+      &::-ms-expand {
         display: none;
       }
-      &:focus{
+
+      &:focus {
         outline: none;
         border-color: @link-color;
       }
     }
-    &::after{
+
+    &::after {
       content: '';
       display: block;
       position: absolute;
@@ -283,24 +267,30 @@ export default defineComponent({
       right: 6px;
       top: 50%;
       margin-top: -1px;
-      border-top:  6px solid @text-color;
+      border-top: 6px solid @text-color;
       border-left: 6px solid transparent;
       border-right: 6px solid transparent;
       border-bottom: none;
       pointer-events: none
     }
   }
-  .footer__navigation{
-    > button:first-of-type {
+
+  .footer__navigation {
+    >button:first-of-type {
       margin-right: 16px;
     }
+
     font-size: @footer-font-size;
-    &__page-btn, &__info, &__page-info{
+
+    &__page-btn,
+    &__info,
+    &__page-info {
       display: inline-block;
       vertical-align: middle;
       color: @secondary-text-color;
     }
-    &__page-btn{
+
+    &__page-btn {
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
@@ -309,66 +299,78 @@ export default defineComponent({
       text-decoration: none;
       color: @text-color;
       font-weight: bold;
-      white-space:nowrap;
+      white-space: nowrap;
       vertical-align: middle;
-      &:hover{
+
+      &:hover {
         cursor: pointer;
       }
+
       &.disabled,
       &.disabled:hover {
         opacity: 0.5;
         cursor: not-allowed;
-        .chevron.left:after{
+
+        .chevron.left:after {
           border-right-color: @text-color;
         }
-        .chevron.right:after{
+
+        .chevron.right:after {
           border-left-color: @text-color;
         }
       }
-      span{
+
+      span {
         display: inline-block;
         vertical-align: middle;
         font-size: @footer-font-size;
       }
-      .chevron{
-        width:  24px;
-        height:  24px;
+
+      .chevron {
+        width: 24px;
+        height: 24px;
         border-radius: 15%;
-        position:  relative;
-        margin:  0;
+        position: relative;
+        margin: 0;
         display: inline-block;
         vertical-align: middle;
-        &:after{
-          content:  '';
-          position:  absolute;
-          display:  block;
-          left:  50%;
-          top:  50%;
-          margin-top:  -6px;
+
+        &:after {
+          content: '';
+          position: absolute;
+          display: block;
+          left: 50%;
+          top: 50%;
+          margin-top: -6px;
           border-top: 6px solid transparent;
           border-bottom: 6px solid transparent;
         }
-        &.left::after{
-          border-right:  6px solid @link-color;
-          margin-left:  -3px;
+
+        &.left::after {
+          border-right: 6px solid @link-color;
+          margin-left: -3px;
         }
 
-        &.right::after{
-          border-left:  6px solid @link-color;
-          margin-left:  -3px;
+        &.right::after {
+          border-left: 6px solid @link-color;
+          margin-left: -3px;
         }
       }
     }
-    &__info, &__page-info{
+
+    &__info,
+    &__page-info {
       display: inline-block;
-      margin:  0px 16px;
+      margin: 0px 16px;
     }
-    &__page-info{
-      span{
+
+    &__page-info {
+      span {
         display: inline-block;
         vertical-align: middle;
       }
-      &__current-entry{
+
+      &__current-entry {
         width: 30px;
         text-align: center;
         vertical-align: middle;
@@ -381,11 +383,13 @@ export default defineComponent({
 }
 
 @media only screen and (max-width: 750px) {
+
   /* on small screens hide the info */
-  .vgt-wrap__footer .footer__navigation__info{
-    display:  none;
+  .vgt-wrap__footer .footer__navigation__info {
+    display: none;
   }
-  .vgt-wrap__footer .footer__navigation__page-btn{
+
+  .vgt-wrap__footer .footer__navigation__page-btn {
     margin-left: 16px;
   }
 }

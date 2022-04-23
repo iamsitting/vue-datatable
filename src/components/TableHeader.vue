@@ -1,55 +1,32 @@
 <template>
-<thead>
-  <tr>
-    <th scope="col" v-if="lineNumbers" class="line-numbers"></th>
-    <th scope="col" v-if="selectable" class="vgt-checkbox-col">
-      <input
-        type="checkbox"
-        :checked="allSelected"
-        :indeterminate.prop="allSelectedIndeterminate"
-        @change="toggleSelectAll" />
-    </th>
-    <template
-        v-for="(column, index) in columns"
-        :key="index"
-    >
-      <th v-if="!column.hidden"
-        scope="col"
-        :title="column.tooltip"
-        :class="getHeaderClasses(column, index as number)"
-        :style="wrapperStyles(index as number)"
-        :aria-sort="getColumnSortLong(column)"
-        :aria-controls="`col-${index}`"
-      >
-        <slot name="table-column" :column="column">
-          {{column.label}}
-        </slot>
-        <button
-        v-if="isSortableColumn(column)"
-        @click="sort($event, column)">
-        </button>
+  <thead>
+    <tr>
+      <th scope="col" v-if="lineNumbers" class="line-numbers"></th>
+      <th scope="col" v-if="selectable" class="vgt-checkbox-col">
+        <input type="checkbox" :checked="allSelected" :indeterminate.prop="allSelectedIndeterminate"
+          @change="toggleSelectAll" />
       </th>
-    </template>
-  </tr>
-  <filter-row
-    ref="filter-row"
-    @filter-changed="filterRows"
-    :global-search-enabled="searchEnabled"
-    :line-numbers="lineNumbers"
-    :selectable="selectable"
-    :columns="columns"
-    :mode="mode"
-    :typed-columns="typedColumns">
+      <template v-for="(column, index) in columns" :key="index">
+        <th v-if="!column.hidden" scope="col" :title="column.tooltip" :class="getHeaderClasses(column, index as number)"
+          :style="wrapperStyles(index as number)" :aria-sort="getColumnSortLong(column)"
+          :aria-controls="`col-${index}`">
+          <slot name="table-column" :column="column">
+            {{ column.label }}
+          </slot>
+          <button v-if="isSortableColumn(column)" @click="sort($event, column)">
+          </button>
+        </th>
+      </template>
+    </tr>
+    <filter-row ref="filter-row" @filter-changed="filterRows" :global-search-enabled="searchEnabled"
+      :line-numbers="lineNumbers" :selectable="selectable" :columns="columns" :mode="mode"
+      :typed-columns="typedColumns">
       <template #column-filter="slotProps">
-        <slot
-          name="column-filter"
-          :column="slotProps.column"
-          :updateFilters="slotProps.updateFilters"
-        >
+        <slot name="column-filter" :column="slotProps.column" :updateFilters="slotProps.updateFilters">
         </slot>
       </template>
-  </filter-row>
-</thead>
+    </filter-row>
+  </thead>
 </template>
 
 <script lang="ts">
@@ -117,7 +94,7 @@ export default defineComponent({
       lineNumberThStyle: {},
       columnStyles: [] as ColumnStyle[],
       sorts: [] as Sort[],
-      ro: null as ResizeObserver|null,
+      ro: null as ResizeObserver | null,
       filterRow: {} as typeof FilterRow,
     });
     // reset() {
@@ -278,23 +255,23 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-  @media (max-width: 576px) {
-    th.line-numbers {
-      width: 100% !important;
-      display: block;
-      padding: 0.3em 1em !important;
-    }
+@media (max-width: 576px) {
+  th.line-numbers {
+    width: 100% !important;
+    display: block;
+    padding: 0.3em 1em !important;
   }
+}
 
-  th.sorting:after,
-  th.sorting-asc:after{
-    margin-right:  5px;
-    margin-left:  0px;
-  }
+th.sorting:after,
+th.sorting-asc:after {
+  margin-right: 5px;
+  margin-left: 0px;
+}
 
-  th.sortable:after,
-  th.sortable:before {
-    right: inherit;
-    left: 6px;
-  }
+th.sortable:after,
+th.sortable:before {
+  right: inherit;
+  left: 6px;
+}
 </style>

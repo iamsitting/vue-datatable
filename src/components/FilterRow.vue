@@ -1,66 +1,40 @@
 <template>
-<tr v-if="hasFilterRow">
-  <th v-if="lineNumbers"></th>
-  <th v-if="selectable"></th>
-  <template
-    v-for="(column, index) in columns"
-    :key="index"
-  >
-      <th
-        v-if="!column.hidden"
-        :class="getClasses(column)"
-      >
+  <tr v-if="hasFilterRow">
+    <th v-if="lineNumbers"></th>
+    <th v-if="selectable"></th>
+    <template v-for="(column, index) in columns" :key="index">
+      <th v-if="!column.hidden" :class="getClasses(column)">
 
-        <slot
-            name="column-filter"
-            :column="column"
-            :updateFilters="updateSlotFilter"
-        >
+        <slot name="column-filter" :column="column" :updateFilters="updateSlotFilter">
 
-          <div
-            v-if="isFilterable(column)">
-            <input v-if="!isDropdown(column)"
-              :name="getName(column)"
-              type="text"
-              class="vgt-input"
-              :placeholder="getPlaceholder(column)"
-              :value="columnFilters[fieldKey(column.field)]"
-              @keyup.enter="updateFiltersOnEnter(column, $event)"
-              @input="updateFiltersOnKeyup(column, $event)" />
+          <div v-if="isFilterable(column)">
+            <input v-if="!isDropdown(column)" :name="getName(column)" type="text" class="vgt-input"
+              :placeholder="getPlaceholder(column)" :value="columnFilters[fieldKey(column.field)]"
+              @keyup.enter="updateFiltersOnEnter(column, $event)" @input="updateFiltersOnKeyup(column, $event)" />
 
             <!-- options are a list of primitives -->
-            <select v-if="isDropdownArray(column)"
-              :name="getName(column)"
-              class="vgt-select"
-              :value="columnFilters[fieldKey(column.field)]"
-              @change="updateFiltersImmediately(column.field, $event)">
-                <option value="" key="-1">{{ getPlaceholder(column) }}</option>
-                <option
-                  v-for="(option, i) in column.filterOptions.filterDropdownItems"
-                  :key="i"
-                  :value="option">
-                  {{ option }}
-                </option>
+            <select v-if="isDropdownArray(column)" :name="getName(column)" class="vgt-select"
+              :value="columnFilters[fieldKey(column.field)]" @change="updateFiltersImmediately(column.field, $event)">
+              <option value="" key="-1">{{ getPlaceholder(column) }}</option>
+              <option v-for="(option, i) in column.filterOptions.filterDropdownItems" :key="i" :value="option">
+                {{ option }}
+              </option>
             </select>
 
             <!-- options are a list of objects with text and value -->
-            <select v-if="isDropdownObjects(column)"
-              :name="getName(column)"
-              class="vgt-select"
-              :value="columnFilters[fieldKey(column.field)]"
-              @change="updateFiltersImmediately(column.field, $event)">
+            <select v-if="isDropdownObjects(column)" :name="getName(column)" class="vgt-select"
+              :value="columnFilters[fieldKey(column.field)]" @change="updateFiltersImmediately(column.field, $event)">
               <option value="" key="-1">{{ getPlaceholder(column) }}</option>
-              <option
-                v-for="(option, i) in column.filterOptions.filterDropdownItems"
-                :key="i"
-                :value="option.value">{{ option.text }}</option>
+              <option v-for="(option, i) in column.filterOptions.filterDropdownItems" :key="i" :value="option.value">{{
+                  option.text
+              }}</option>
             </select>
 
           </div>
         </slot>
       </th>
-  </template>
-</tr>
+    </template>
+  </tr>
 </template>
 
 <script lang="ts">
@@ -107,10 +81,10 @@ export default defineComponent({
       }
     };
     const isFilterable = (column: Column) => column.filterOptions
-        && column.filterOptions.enabled;
+      && column.filterOptions.enabled;
     const isDropdown = (column: Column) => isFilterable(column)
-        && column.filterOptions.filterDropdownItems
-        && column.filterOptions.filterDropdownItems.length;
+      && column.filterOptions.filterDropdownItems
+      && column.filterOptions.filterDropdownItems.length;
     const fieldKey = (field: any) => {
       if (typeof (field) === 'function' && field.name) {
         return field.name;
@@ -118,9 +92,9 @@ export default defineComponent({
       return field;
     };
     const isDropdownObjects = (column: Column) => isDropdown(column)
-        && typeof column.filterOptions.filterDropdownItems[0] === 'object';
+      && typeof column.filterOptions.filterDropdownItems[0] === 'object';
     const isDropdownArray = (column: Column) => isDropdown(column)
-        && typeof column.filterOptions.filterDropdownItems[0] !== 'object';
+      && typeof column.filterOptions.filterDropdownItems[0] !== 'object';
     const getClasses = (column: Column) => {
       const firstClass = 'filter-th';
       return (column.filterOptions && column.filterOptions.styleClass) ? [firstClass, ...column.filterOptions.styleClass.split(' ')].join(' ') : firstClass;
@@ -130,7 +104,7 @@ export default defineComponent({
       const placeholder = (isFilterable(column) && column.filterOptions.placeholder) || `Filter ${column.label}`;
       return placeholder;
     };
-    const getName = (column:Column) => `vgt-${fieldKey(column.field)}`;
+    const getName = (column: Column) => `vgt-${fieldKey(column.field)}`;
     const updateFiltersImmediately = (field: any, event: Event) => {
       data.columnFilters[fieldKey(field)] = (event.target as HTMLInputElement).value;
       ctx.emit('filter-changed', data.columnFilters);
@@ -220,8 +194,10 @@ export default defineComponent({
 @text-color: #606266;
 @link-color: #409eff;
 @input-border-color: #DCDFE6;
+
 /* input */
-.vgt-input, .vgt-select{
+.vgt-input,
+.vgt-select {
   width: 100%;
   height: 32px;
   line-height: 1;
@@ -235,12 +211,16 @@ export default defineComponent({
   background-image: none;
   background-color: #fff;
   border: 1px solid @input-border-color;
-  transition: border-color .2s cubic-bezier(.645,.045,.355,1);
-  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+
+  &::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: @text-color;
-    opacity: 0.3; /* Firefox */
+    opacity: 0.3;
+    /* Firefox */
   }
-  &:focus{
+
+  &:focus {
     outline: none;
     border-color: @link-color;
   }
