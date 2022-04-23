@@ -1,32 +1,23 @@
 <template>
-<div>
-  <data-table
-    :columns="columns"
-    :rows="rows"
-    :totalRows="totalRecords"
-    mode="remote"
-    v-on:page-change="onPageChange"
-    v-on:sort-change="onSortChange"
-    v-on:column-filter="onColumnFilter"
-    v-on:per-page-change="onPerPageChange"
-    compactMode
-    :pagination-options="{
-      enabled: true,
-      perPage: 5,
-      perPageDropdown: [20, 50, 100, 200],
-      dropdownAllowAll: false,
-    }"
-    :search-options="{
-      enabled: false,
-    }"
-    styleClass="vgt-table condensed bordered striped">
-  </data-table>
-</div>
+  <div>
+    <data-table :columns="columns" :rows="rows" :totalRows="totalRecords" mode="remote" v-on:page-change="onPageChange"
+      v-on:sort-change="onSortChange" v-on:column-filter="onColumnFilter" v-on:per-page-change="onPerPageChange"
+      compactMode :pagination-options="{
+        enabled: true,
+        perPage: 5,
+        perPageDropdown: [20, 50, 100, 200],
+        dropdownAllowAll: false,
+      }" :search-options="{
+  enabled: false,
+}" styleClass="vgt-table condensed bordered striped">
+    </data-table>
+  </div>
 </template>
 
-<script>
+<script lang="ts">
 import DataTable from '../src/components/DataTable.vue'
-export default {
+import { defineComponent } from 'vue';
+export default defineComponent({
   name: 'remote-table',
   props: [],
   data() {
@@ -193,7 +184,7 @@ export default {
     onPageChange(params) {
       console.log('page change called');
       console.log(params);
-      this.updateParams({page: params.currentPage});
+      this.updateParams({ page: params.currentPage });
       this.loadItems();
     },
 
@@ -245,9 +236,8 @@ export default {
   components: {
     DataTable,
   },
-};
+});
 </script>
 
 <style lang="less" scoped>
-
 </style>
