@@ -2,7 +2,7 @@
 
 | :warning: WARNING          |
 |:---------------------------|
-| This project is a port of Vue-good-table-next. This is a work in progress and not ready for release. |
+| This project is a port of Vue-good-table-next. This is a work in progress and not ready for release. The goal of this project is to continue vue-good-table as a vue3/composition api/typescript/LESS project. This project will also rely on vite and uikit.
 
 <!-- [![npm](https://img.shields.io/npm/dm/vue-good-table-next.svg?style=flat-square)](https://www.npmjs.com/package/vue-good-table-next) -->
 <!-- [![npm](https://img.shields.io/github/package-json/v/borisflesch/vue-good-table.svg?style=flat-square)](https://github.com/borisflesch/vue-good-table-next/releases) -->

@@ -1,44 +1,31 @@
 <template>
   <div>
     {{ selectedIds }}
-    <button @click="rows = [];">empty row</button>
-    <button @click="resetTable">reset Table</button>
-    <button @click="hideColumn">hide column</button>
-    <button @click="setFilter">SetFilter</button>
-    <button @click="changePage">Change Page</button>
+    <button class="uk-button uk-button-small" @click="rows = [];">empty row</button>
+    <button class="uk-button uk-button-small" @click="resetTable">reset Table</button>
+    <button class="uk-button uk-button-small" @click="hideColumn">hide column</button>
+    <button class="uk-button uk-button-small" @click="setFilter">SetFilter</button>
+    <button class="uk-button uk-button-small" @click="changePage">Change Page</button>
     <input type="text" v-model="searchTerm">
-    <vue-good-table
-      ref="my-table"
-      v-on:column-filter="onColumnFilter"
-      v-on:select-all="onSelectAll"
-      v-on:sort-change="onSortChange"
-      v-on:page-change="onPageChange"
-      v-on:per-page-change="onPerPageChange"
-      v-on:search="onSearch"
-      v-on:selected-rows-change="onSelectChanged"
-      :columns="columns"
-      :rows="rows"
-      :pagination-options="paginationOptions"
-      :select-options="{
+    <vue-good-table ref="my-table" v-on:column-filter="onColumnFilter" v-on:select-all="onSelectAll"
+      v-on:sort-change="onSortChange" v-on:page-change="onPageChange" v-on:per-page-change="onPerPageChange"
+      v-on:search="onSearch" v-on:selected-rows-change="onSelectChanged" :columns="columns" :rows="rows"
+      :pagination-options="paginationOptions" :select-options="{
         enabled: true,
         selectOnCheckboxOnly: false,
         disableSelectInfo: true,
-      }"
-      theme="polar-bear"
-      styleClass="vgt-table"
-      :sort-options="{
-        enabled: true,
-        multipleColumns: false,
-      }"
-      :search-options="{
-        enabled: true,
-        skipDiacritics: true,
-      }">
+      }" theme="polar-bear" styleClass="vgt-table" :sort-options="{
+  enabled: true,
+  multipleColumns: false,
+}" :search-options="{
+  enabled: true,
+  skipDiacritics: true,
+}">
     </vue-good-table>
     <h3>Remote Table</h3>
-    <remote-table/>
+    <remote-table />
     <h3>Grouped Table</h3>
-     <grouped-table></grouped-table>
+    <grouped-table></grouped-table>
   </div>
 </template>
 
@@ -432,19 +419,23 @@ export default {
 </script>
 
 <style lang="css">
-  .row-style{
-    background-color: red;
-  }
-  *{
-    font-family: 'Open Sans';
-  }
-  .red{
-    background-color: red;
-  }
-  .green{
-    background-color: green;
-  }
-  /* .vgt-selection-info-row.info-custom{
+.row-style {
+  background-color: red;
+}
+
+* {
+  font-family: 'Open Sans';
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+/* .vgt-selection-info-row.info-custom{
     background: red;
   } */
 </style>

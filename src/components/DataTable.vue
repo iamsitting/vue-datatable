@@ -1373,6 +1373,7 @@ export default {
 };
 </script>
 <style lang='less'>
+@import 'uikit/dist/css/uikit.min.css';
 @border-color: #DCDFE6;
 @notify-bg-color: #fdf9e8;
 @notify-fg-color: #b38d28;
