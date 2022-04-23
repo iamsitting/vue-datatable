@@ -1251,7 +1251,7 @@ You can provide html for empty state slot as well. Example:
 ``` -->
 
 ## Authors
-
+* [iamsitting](https://github.com/iamsitting)
 * [Boris Flesch](https://github.com/boris-flesch)
 * [xaksis](https://github.com/xaksis) (initial version of Vue-good-table for Vue 2.x)
 * [Other Contributors](https://github.com/borisflesch/vue-good-table-next/graphs/contributors)
