@@ -1,23 +1,4 @@
-/*!
-  * vue-good-table-next v0.0.1
-  * (c) 2021-present Boris Flesch <boris@singlequote.net>
-  * (c) 2017-2021 xaksis <shay@crayonbits.com>
-  * @license MIT
-  */
-import { openBlock, createElementBlock, toDisplayString, withModifiers, createElementVNode, withKeys, resolveComponent, withDirectives, Fragment, renderList, createCommentVNode, vModelSelect, createVNode, normalizeClass, renderSlot, normalizeStyle, createTextVNode, withCtx, createSlots, createBlock } from 'vue';
-
-const DEFAULT_SORT_TYPE = 'asc';
-const SORT_TYPES = {
-  Ascending: 'asc',
-  Descending: 'desc',
-  None: 'none',
-};
-
-const PAGINATION_MODES = {
-  Pages: 'pages',
-  Records: 'records',
-};
-const DEFAULT_ROWS_PER_PAGE_DROPDOWN = [10, 20, 30, 40, 50];
+import { defineComponent, openBlock, createElementBlock, createElementVNode, createTextVNode, computed, reactive, toRefs, toDisplayString, withModifiers, withKeys, watch, resolveComponent, withDirectives, Fragment, renderList, createCommentVNode, vModelSelect, createVNode, normalizeClass, renderSlot, onBeforeUnmount, onMounted, nextTick, normalizeStyle, withCtx, createBlock, createSlots } from 'vue';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -1876,389 +1857,404 @@ module.exports = isEqual;
 
 var isEqual = lodash_isequal.exports;
 
+const DEFAULT_SORT_TYPE = "asc";
+const SORT_TYPES = {
+  Ascending: "asc",
+  Descending: "desc",
+  None: "none"
+};
+const PAGINATION_MODES = {
+  Pages: "pages",
+  Records: "records"
+};
+const DEFAULT_ROWS_PER_PAGE_DROPDOWN = [10, 20, 30, 40, 50];
+
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
 // all diacritics
-let diacritics = {
+const diacritics = {
   a: [
-    "a",
-    "à",
-    "á",
-    "â",
-    "ã",
-    "ä",
-    "å",
-    "æ",
-    "ā",
-    "ă",
-    "ą",
-    "ǎ",
-    "ǟ",
-    "ǡ",
-    "ǻ",
-    "ȁ",
-    "ȃ",
-    "ȧ",
-    "ɐ",
-    "ɑ",
-    "ɒ",
-    "ͣ",
-    "а",
-    "ӑ",
-    "ӓ",
-    "ᵃ",
-    "ᵄ",
-    "ᶏ",
-    "ḁ",
-    "ẚ",
-    "ạ",
-    "ả",
-    "ấ",
-    "ầ",
-    "ẩ",
-    "ẫ",
-    "ậ",
-    "ắ",
-    "ằ",
-    "ẳ",
-    "ẵ",
-    "ặ",
-    "ₐ",
-    "ⱥ",
-    "ａ",
+    'a',
+    'à',
+    'á',
+    'â',
+    'ã',
+    'ä',
+    'å',
+    'æ',
+    'ā',
+    'ă',
+    'ą',
+    'ǎ',
+    'ǟ',
+    'ǡ',
+    'ǻ',
+    'ȁ',
+    'ȃ',
+    'ȧ',
+    'ɐ',
+    'ɑ',
+    'ɒ',
+    'ͣ',
+    'а',
+    'ӑ',
+    'ӓ',
+    'ᵃ',
+    'ᵄ',
+    'ᶏ',
+    'ḁ',
+    'ẚ',
+    'ạ',
+    'ả',
+    'ấ',
+    'ầ',
+    'ẩ',
+    'ẫ',
+    'ậ',
+    'ắ',
+    'ằ',
+    'ẳ',
+    'ẵ',
+    'ặ',
+    'ₐ',
+    'ⱥ',
+    'ａ',
   ],
-  b: ["b", "ƀ", "ƃ", "ɓ", "ᖯ", "ᵇ", "ᵬ", "ᶀ", "ḃ", "ḅ", "ḇ", "ｂ"],
-  c: ["c", "ç", "ć", "ĉ", "ċ", "č", "ƈ", "ȼ", "ɕ", "ͨ", "ᴄ", "ᶜ", "ḉ", "ↄ", "ｃ"],
+  b: ['b', 'ƀ', 'ƃ', 'ɓ', 'ᖯ', 'ᵇ', 'ᵬ', 'ᶀ', 'ḃ', 'ḅ', 'ḇ', 'ｂ'],
+  c: ['c', 'ç', 'ć', 'ĉ', 'ċ', 'č', 'ƈ', 'ȼ', 'ɕ', 'ͨ', 'ᴄ', 'ᶜ', 'ḉ', 'ↄ', 'ｃ'],
   d: [
-    "d",
-    "ď",
-    "đ",
-    "Ƌ",
-    "ƌ",
-    "ȡ",
-    "ɖ",
-    "ɗ",
-    "ͩ",
-    "ᵈ",
-    "ᵭ",
-    "ᶁ",
-    "ᶑ",
-    "ḋ",
-    "ḍ",
-    "ḏ",
-    "ḑ",
-    "ḓ",
-    "ｄ",
+    'd',
+    'ď',
+    'đ',
+    'Ƌ',
+    'ƌ',
+    'ȡ',
+    'ɖ',
+    'ɗ',
+    'ͩ',
+    'ᵈ',
+    'ᵭ',
+    'ᶁ',
+    'ᶑ',
+    'ḋ',
+    'ḍ',
+    'ḏ',
+    'ḑ',
+    'ḓ',
+    'ｄ',
   ],
   e: [
-    "e",
-    "è",
-    "é",
-    "ê",
-    "ë",
-    "ē",
-    "ĕ",
-    "ė",
-    "ę",
-    "ě",
-    "ǝ",
-    "ȅ",
-    "ȇ",
-    "ȩ",
-    "ɇ",
-    "ɘ",
-    "ͤ",
-    "ᵉ",
-    "ᶒ",
-    "ḕ",
-    "ḗ",
-    "ḙ",
-    "ḛ",
-    "ḝ",
-    "ẹ",
-    "ẻ",
-    "ẽ",
-    "ế",
-    "ề",
-    "ể",
-    "ễ",
-    "ệ",
-    "ₑ",
-    "ｅ",
+    'e',
+    'è',
+    'é',
+    'ê',
+    'ë',
+    'ē',
+    'ĕ',
+    'ė',
+    'ę',
+    'ě',
+    'ǝ',
+    'ȅ',
+    'ȇ',
+    'ȩ',
+    'ɇ',
+    'ɘ',
+    'ͤ',
+    'ᵉ',
+    'ᶒ',
+    'ḕ',
+    'ḗ',
+    'ḙ',
+    'ḛ',
+    'ḝ',
+    'ẹ',
+    'ẻ',
+    'ẽ',
+    'ế',
+    'ề',
+    'ể',
+    'ễ',
+    'ệ',
+    'ₑ',
+    'ｅ',
   ],
-  f: ["f", "ƒ", "ᵮ", "ᶂ", "ᶠ", "ḟ", "ｆ"],
-  g: ["g", "ĝ", "ğ", "ġ", "ģ", "ǥ", "ǧ", "ǵ", "ɠ", "ɡ", "ᵍ", "ᵷ", "ᵹ", "ᶃ", "ᶢ", "ḡ", "ｇ"],
+  f: ['f', 'ƒ', 'ᵮ', 'ᶂ', 'ᶠ', 'ḟ', 'ｆ'],
+  g: ['g', 'ĝ', 'ğ', 'ġ', 'ģ', 'ǥ', 'ǧ', 'ǵ', 'ɠ', 'ɡ', 'ᵍ', 'ᵷ', 'ᵹ', 'ᶃ', 'ᶢ', 'ḡ', 'ｇ'],
   h: [
-    "h",
-    "ĥ",
-    "ħ",
-    "ƕ",
-    "ȟ",
-    "ɥ",
-    "ɦ",
-    "ʮ",
-    "ʯ",
-    "ʰ",
-    "ʱ",
-    "ͪ",
-    "Һ",
-    "һ",
-    "ᑋ",
-    "ᶣ",
-    "ḣ",
-    "ḥ",
-    "ḧ",
-    "ḩ",
-    "ḫ",
-    "ⱨ",
-    "ｈ",
+    'h',
+    'ĥ',
+    'ħ',
+    'ƕ',
+    'ȟ',
+    'ɥ',
+    'ɦ',
+    'ʮ',
+    'ʯ',
+    'ʰ',
+    'ʱ',
+    'ͪ',
+    'Һ',
+    'һ',
+    'ᑋ',
+    'ᶣ',
+    'ḣ',
+    'ḥ',
+    'ḧ',
+    'ḩ',
+    'ḫ',
+    'ⱨ',
+    'ｈ',
   ],
   i: [
-    "i",
-    "ì",
-    "í",
-    "î",
-    "ï",
-    "ĩ",
-    "ī",
-    "ĭ",
-    "į",
-    "ǐ",
-    "ȉ",
-    "ȋ",
-    "ɨ",
-    "ͥ",
-    "ᴉ",
-    "ᵎ",
-    "ᵢ",
-    "ᶖ",
-    "ᶤ",
-    "ḭ",
-    "ḯ",
-    "ỉ",
-    "ị",
-    "ｉ",
+    'i',
+    'ì',
+    'í',
+    'î',
+    'ï',
+    'ĩ',
+    'ī',
+    'ĭ',
+    'į',
+    'ǐ',
+    'ȉ',
+    'ȋ',
+    'ɨ',
+    'ͥ',
+    'ᴉ',
+    'ᵎ',
+    'ᵢ',
+    'ᶖ',
+    'ᶤ',
+    'ḭ',
+    'ḯ',
+    'ỉ',
+    'ị',
+    'ｉ',
   ],
-  j: ["j", "ĵ", "ǰ", "ɉ", "ʝ", "ʲ", "ᶡ", "ᶨ", "ｊ"],
-  k: ["k", "ķ", "ƙ", "ǩ", "ʞ", "ᵏ", "ᶄ", "ḱ", "ḳ", "ḵ", "ⱪ", "ｋ"],
+  j: ['j', 'ĵ', 'ǰ', 'ɉ', 'ʝ', 'ʲ', 'ᶡ', 'ᶨ', 'ｊ'],
+  k: ['k', 'ķ', 'ƙ', 'ǩ', 'ʞ', 'ᵏ', 'ᶄ', 'ḱ', 'ḳ', 'ḵ', 'ⱪ', 'ｋ'],
   l: [
-    "l",
-    "ĺ",
-    "ļ",
-    "ľ",
-    "ŀ",
-    "ł",
-    "ƚ",
-    "ȴ",
-    "ɫ",
-    "ɬ",
-    "ɭ",
-    "ˡ",
-    "ᶅ",
-    "ᶩ",
-    "ᶪ",
-    "ḷ",
-    "ḹ",
-    "ḻ",
-    "ḽ",
-    "ℓ",
-    "ⱡ",
+    'l',
+    'ĺ',
+    'ļ',
+    'ľ',
+    'ŀ',
+    'ł',
+    'ƚ',
+    'ȴ',
+    'ɫ',
+    'ɬ',
+    'ɭ',
+    'ˡ',
+    'ᶅ',
+    'ᶩ',
+    'ᶪ',
+    'ḷ',
+    'ḹ',
+    'ḻ',
+    'ḽ',
+    'ℓ',
+    'ⱡ',
   ],
-  m: ["m", "ɯ", "ɰ", "ɱ", "ͫ", "ᴟ", "ᵐ", "ᵚ", "ᵯ", "ᶆ", "ᶬ", "ᶭ", "ḿ", "ṁ", "ṃ", "㎡", "㎥", "ｍ"],
+  m: ['m', 'ɯ', 'ɰ', 'ɱ', 'ͫ', 'ᴟ', 'ᵐ', 'ᵚ', 'ᵯ', 'ᶆ', 'ᶬ', 'ᶭ', 'ḿ', 'ṁ', 'ṃ', '㎡', '㎥', 'ｍ'],
   n: [
-    "n",
-    "ñ",
-    "ń",
-    "ņ",
-    "ň",
-    "ŉ",
-    "ƞ",
-    "ǹ",
-    "ȵ",
-    "ɲ",
-    "ɳ",
-    "ᵰ",
-    "ᶇ",
-    "ᶮ",
-    "ᶯ",
-    "ṅ",
-    "ṇ",
-    "ṉ",
-    "ṋ",
-    "ⁿ",
-    "ｎ",
+    'n',
+    'ñ',
+    'ń',
+    'ņ',
+    'ň',
+    'ŉ',
+    'ƞ',
+    'ǹ',
+    'ȵ',
+    'ɲ',
+    'ɳ',
+    'ᵰ',
+    'ᶇ',
+    'ᶮ',
+    'ᶯ',
+    'ṅ',
+    'ṇ',
+    'ṉ',
+    'ṋ',
+    'ⁿ',
+    'ｎ',
   ],
   o: [
-    "o",
-    "ò",
-    "ó",
-    "ô",
-    "õ",
-    "ö",
-    "ø",
-    "ō",
-    "ŏ",
-    "ő",
-    "ơ",
-    "ǒ",
-    "ǫ",
-    "ǭ",
-    "ǿ",
-    "ȍ",
-    "ȏ",
-    "ȫ",
-    "ȭ",
-    "ȯ",
-    "ȱ",
-    "ɵ",
-    "ͦ",
-    "о",
-    "ӧ",
-    "ө",
-    "ᴏ",
-    "ᴑ",
-    "ᴓ",
-    "ᴼ",
-    "ᵒ",
-    "ᶱ",
-    "ṍ",
-    "ṏ",
-    "ṑ",
-    "ṓ",
-    "ọ",
-    "ỏ",
-    "ố",
-    "ồ",
-    "ổ",
-    "ỗ",
-    "ộ",
-    "ớ",
-    "ờ",
-    "ở",
-    "ỡ",
-    "ợ",
-    "ₒ",
-    "ｏ",
-    "𐐬",
+    'o',
+    'ò',
+    'ó',
+    'ô',
+    'õ',
+    'ö',
+    'ø',
+    'ō',
+    'ŏ',
+    'ő',
+    'ơ',
+    'ǒ',
+    'ǫ',
+    'ǭ',
+    'ǿ',
+    'ȍ',
+    'ȏ',
+    'ȫ',
+    'ȭ',
+    'ȯ',
+    'ȱ',
+    'ɵ',
+    'ͦ',
+    'о',
+    'ӧ',
+    'ө',
+    'ᴏ',
+    'ᴑ',
+    'ᴓ',
+    'ᴼ',
+    'ᵒ',
+    'ᶱ',
+    'ṍ',
+    'ṏ',
+    'ṑ',
+    'ṓ',
+    'ọ',
+    'ỏ',
+    'ố',
+    'ồ',
+    'ổ',
+    'ỗ',
+    'ộ',
+    'ớ',
+    'ờ',
+    'ở',
+    'ỡ',
+    'ợ',
+    'ₒ',
+    'ｏ',
+    '𐐬',
   ],
-  p: ["p", "ᵖ", "ᵱ", "ᵽ", "ᶈ", "ṕ", "ṗ", "ｐ"],
-  q: ["q", "ɋ", "ʠ", "ᛩ", "ｑ"],
+  p: ['p', 'ᵖ', 'ᵱ', 'ᵽ', 'ᶈ', 'ṕ', 'ṗ', 'ｐ'],
+  q: ['q', 'ɋ', 'ʠ', 'ᛩ', 'ｑ'],
   r: [
-    "r",
-    "ŕ",
-    "ŗ",
-    "ř",
-    "ȑ",
-    "ȓ",
-    "ɍ",
-    "ɹ",
-    "ɻ",
-    "ʳ",
-    "ʴ",
-    "ʵ",
-    "ͬ",
-    "ᵣ",
-    "ᵲ",
-    "ᶉ",
-    "ṙ",
-    "ṛ",
-    "ṝ",
-    "ṟ",
+    'r',
+    'ŕ',
+    'ŗ',
+    'ř',
+    'ȑ',
+    'ȓ',
+    'ɍ',
+    'ɹ',
+    'ɻ',
+    'ʳ',
+    'ʴ',
+    'ʵ',
+    'ͬ',
+    'ᵣ',
+    'ᵲ',
+    'ᶉ',
+    'ṙ',
+    'ṛ',
+    'ṝ',
+    'ṟ',
   ],
-  s: ["s", "ś", "ŝ", "ş", "š", "ș", "ʂ", "ᔆ", "ᶊ", "ṡ", "ṣ", "ṥ", "ṧ", "ṩ", "ｓ"],
+  s: ['s', 'ś', 'ŝ', 'ş', 'š', 'ș', 'ʂ', 'ᔆ', 'ᶊ', 'ṡ', 'ṣ', 'ṥ', 'ṧ', 'ṩ', 'ｓ'],
   t: [
-    "t",
-    "ţ",
-    "ť",
-    "ŧ",
-    "ƫ",
-    "ƭ",
-    "ț",
-    "ʇ",
-    "ͭ",
-    "ᵀ",
-    "ᵗ",
-    "ᵵ",
-    "ᶵ",
-    "ṫ",
-    "ṭ",
-    "ṯ",
-    "ṱ",
-    "ẗ",
-    "ｔ",
+    't',
+    'ţ',
+    'ť',
+    'ŧ',
+    'ƫ',
+    'ƭ',
+    'ț',
+    'ʇ',
+    'ͭ',
+    'ᵀ',
+    'ᵗ',
+    'ᵵ',
+    'ᶵ',
+    'ṫ',
+    'ṭ',
+    'ṯ',
+    'ṱ',
+    'ẗ',
+    'ｔ',
   ],
   u: [
-    "u",
-    "ù",
-    "ú",
-    "û",
-    "ü",
-    "ũ",
-    "ū",
-    "ŭ",
-    "ů",
-    "ű",
-    "ų",
-    "ư",
-    "ǔ",
-    "ǖ",
-    "ǘ",
-    "ǚ",
-    "ǜ",
-    "ȕ",
-    "ȗ",
-    "ͧ",
-    "ߎ",
-    "ᵘ",
-    "ᵤ",
-    "ṳ",
-    "ṵ",
-    "ṷ",
-    "ṹ",
-    "ṻ",
-    "ụ",
-    "ủ",
-    "ứ",
-    "ừ",
-    "ử",
-    "ữ",
-    "ự",
-    "ｕ",
+    'u',
+    'ù',
+    'ú',
+    'û',
+    'ü',
+    'ũ',
+    'ū',
+    'ŭ',
+    'ů',
+    'ű',
+    'ų',
+    'ư',
+    'ǔ',
+    'ǖ',
+    'ǘ',
+    'ǚ',
+    'ǜ',
+    'ȕ',
+    'ȗ',
+    'ͧ',
+    'ߎ',
+    'ᵘ',
+    'ᵤ',
+    'ṳ',
+    'ṵ',
+    'ṷ',
+    'ṹ',
+    'ṻ',
+    'ụ',
+    'ủ',
+    'ứ',
+    'ừ',
+    'ử',
+    'ữ',
+    'ự',
+    'ｕ',
   ],
-  v: ["v", "ʋ", "ͮ", "ᵛ", "ᵥ", "ᶹ", "ṽ", "ṿ", "ⱱ", "ｖ", "ⱴ"],
-  w: ["w", "ŵ", "ʷ", "ᵂ", "ẁ", "ẃ", "ẅ", "ẇ", "ẉ", "ẘ", "ⱳ", "ｗ"],
-  x: ["x", "̽", "͓", "ᶍ", "ͯ", "ẋ", "ẍ", "ₓ", "ｘ"],
-  y: ["y", "ý", "ÿ", "ŷ", "ȳ", "ɏ", "ʸ", "ẏ", "ỳ", "ỵ", "ỷ", "ỹ", "ｙ"],
+  v: ['v', 'ʋ', 'ͮ', 'ᵛ', 'ᵥ', 'ᶹ', 'ṽ', 'ṿ', 'ⱱ', 'ｖ', 'ⱴ'],
+  w: ['w', 'ŵ', 'ʷ', 'ᵂ', 'ẁ', 'ẃ', 'ẅ', 'ẇ', 'ẉ', 'ẘ', 'ⱳ', 'ｗ'],
+  x: ['x', '̽', '͓', 'ᶍ', 'ͯ', 'ẋ', 'ẍ', 'ₓ', 'ｘ'],
+  y: ['y', 'ý', 'ÿ', 'ŷ', 'ȳ', 'ɏ', 'ʸ', 'ẏ', 'ỳ', 'ỵ', 'ỷ', 'ỹ', 'ｙ'],
   z: [
-    "z",
-    "ź",
-    "ż",
-    "ž",
-    "ƶ",
-    "ȥ",
-    "ɀ",
-    "ʐ",
-    "ʑ",
-    "ᙆ",
-    "ᙇ",
-    "ᶻ",
-    "ᶼ",
-    "ᶽ",
-    "ẑ",
-    "ẓ",
-    "ẕ",
-    "ⱬ",
-    "ｚ",
+    'z',
+    'ź',
+    'ż',
+    'ž',
+    'ƶ',
+    'ȥ',
+    'ɀ',
+    'ʐ',
+    'ʑ',
+    'ᙆ',
+    'ᙇ',
+    'ᶻ',
+    'ᶼ',
+    'ᶽ',
+    'ẑ',
+    'ẓ',
+    'ẕ',
+    'ⱬ',
+    'ｚ',
   ],
 };
 
 // Precompiled Object with { key = Diacritic, value = real-Character }
-const compiledDiactitics = (function() {
-  let x = {};
+const df = () => {
+  const x = {};
 
-  for (let key in diacritics) {
-    let ok = diacritics[key];
+  for (const key in diacritics) {
+    const ok = diacritics[key];
 
-    for (let rval in ok) {
-      let val = ok[rval];
+    for (const rval in ok) {
+      const val = ok[rval];
 
       // Do not replace the char with itself
       if (val !== key) {
@@ -2268,25 +2264,26 @@ const compiledDiactitics = (function() {
   }
 
   return x;
-})();
+};
+const compiledDiactitics = (df());
 
 // Regex for detecting non-ASCII-Characters in String
 const regexNonASCII = /[^a-z0-9\s,.-]/;
 
 /*
- * Main function of the module which removes all diacritics from the received text
- */
+   * Main function of the module which removes all diacritics from the received text
+   */
 const diacriticless = (text) => {
   // When there are only ascii-Characters in the string, skip processing and return text right away
   if (text.search(regexNonASCII) === -1) {
     return text;
   }
 
-  let result = "";
+  let result = '';
 
-  let len = text.length;
-  for (var i = 0; i < len; i++) {
-    let searchChar = text.charAt(i);
+  const len = text.length;
+  for (let i = 0; i < len; i += 1) {
+    const searchChar = text.charAt(i);
 
     // If applicable replace the diacritic character with the real one or use the original value
     result += searchChar in compiledDiactitics ? compiledDiactitics[searchChar] : searchChar;
@@ -2295,349 +2292,341 @@ const diacriticless = (text) => {
   return result;
 };
 
-const escapeRegExp = str => str.replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
-
+const escapeRegExp = (str) => str.replace(/[\\^$*+?.()|[\]{}]/g, "\\$&");
 var defaultType = {
   format(x) {
     return x;
   },
   filterPredicate(rowval, filter, skipDiacritics = false, fromDropdown = false) {
-    // take care of nulls
-    if (typeof rowval === 'undefined' || rowval === null) {
+    if (typeof rowval === "undefined" || rowval === null) {
       return false;
     }
-
-    // row value
-    const rowValue = skipDiacritics
-      ? String(rowval).toLowerCase()
-      : diacriticless(escapeRegExp(String(rowval)).toLowerCase());
-
-    // search term
-    const searchTerm = skipDiacritics
-      ? filter.toLowerCase()
-      : diacriticless(escapeRegExp(filter).toLowerCase());
-
-    // comparison
-    return fromDropdown ? rowValue === searchTerm : (rowValue.indexOf(searchTerm) > -1);
+    const rowValue = skipDiacritics ? String(rowval).toLowerCase() : diacriticless(escapeRegExp(String(rowval)).toLowerCase());
+    const searchTerm = skipDiacritics ? filter.toLowerCase() : diacriticless(escapeRegExp(filter).toLowerCase());
+    return fromDropdown ? rowValue === searchTerm : rowValue.indexOf(searchTerm) > -1;
   },
-
   compare(x, y) {
     function cook(d) {
-      if (typeof d === 'undefined' || d === null) return '';
+      if (typeof d === "undefined" || d === null)
+        return "";
       return diacriticless(String(d).toLowerCase());
     }
-    x = cook(x);
-    y = cook(y);
-    if (x < y) return -1;
-    if (x > y) return 1;
+    const a = cook(x);
+    const b = cook(y);
+    if (a < b)
+      return -1;
+    if (a > b)
+      return 1;
     return 0;
-  },
+  }
 };
 
 var _export_sfc = (sfc, props) => {
+  const target = sfc.__vccOpts || sfc;
   for (const [key, val] of props) {
-    sfc[key] = val;
+    target[key] = val;
   }
-  return sfc
+  return target;
 };
 
-const _sfc_main$6 = {
-  name: 'VgtPaginationPageInfo',
-  props: {
-    currentPage: {
-      default: 1,
-    },
-    lastPage: {
-      default: 1,
-    },
-    totalRecords: {
-      default: 0,
-    },
-    ofText: {
-      default: 'of',
-      type: String,
-    },
-    pageText: {
-      default: 'page',
-      type: String,
-    },
-    currentPerPage: {},
-    mode: {
-      default: PAGINATION_MODES.Records,
-    },
-    infoFn: { default: null },
-  },
-  data() {
+const _sfc_main$7 = defineComponent({
+  setup(props) {
+    const downloadCSV = (csv, filename) => {
+      const csvFile = new Blob([csv], { type: "text/csv" });
+      const downloadLink = document.createElement("a");
+      downloadLink.download = filename;
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+    };
+    const exportTableToCSV = () => {
+      const csv = [];
+      const rows = document.querySelectorAll(`table#${props.tableId} tr`);
+      for (let i = 0; i < rows.length; i += 1) {
+        const row = [];
+        const cols = rows[i].querySelectorAll("td, th");
+        for (let j = 0; j < cols.length; j += 1)
+          row.push(cols[j].innerText);
+        csv.push(row.join(","));
+      }
+      downloadCSV(csv.join("\n"), "export.csv");
+    };
     return {
-      id: this.getId(),
+      exportTableToCSV
     };
   },
-  computed: {
-    pageInfo() {
-      return `${this.ofText} ${this.lastPage}`;
-    },
-    firstRecordOnPage() {
-      return ((this.currentPage - 1) * this.currentPerPage) + 1;
-    },
-    lastRecordOnPage() {
-      return Math.min(this.totalRecords, this.currentPage * this.currentPerPage);
-    },
-    recordInfo() {
-      let first = this.firstRecordOnPage;
-      const last = this.lastRecordOnPage;
+  props: {
+    tableId: {
+      type: String,
+      required: true
+    }
+  }
+});
+const _hoisted_1$7 = /* @__PURE__ */ createTextVNode(" Download ");
+const _hoisted_2$7 = /* @__PURE__ */ createElementVNode("i", { class: "fas fa-download" }, null, -1);
+const _hoisted_3$7 = [
+  _hoisted_1$7,
+  _hoisted_2$7
+];
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", null, [
+    createElementVNode("a", {
+      onClick: _cache[0] || (_cache[0] = (...args) => _ctx.exportTableToCSV && _ctx.exportTableToCSV(...args)),
+      class: "uk-button uk-button-default uk-button-small"
+    }, _hoisted_3$7)
+  ]);
+}
+var ExportButton = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
 
+const _sfc_main$6 = defineComponent({
+  name: "PaginationPageInfo",
+  props: {
+    currentPage: {
+      default: 1
+    },
+    lastPage: {
+      default: 1
+    },
+    totalRecords: {
+      default: 0
+    },
+    ofText: {
+      default: "of",
+      type: String
+    },
+    pageText: {
+      default: "page",
+      type: String
+    },
+    currentPerPage: { default: 0 },
+    mode: {
+      default: PAGINATION_MODES.Records
+    },
+    infoFn: {
+      type: Object,
+      default: null
+    }
+  },
+  setup(props, ctx) {
+    const getId = () => `vgt-page-input-${Math.floor(Math.random() * Date.now())}`;
+    const pageInfo = computed(() => `${props.ofText} ${props.lastPage}`);
+    const firstRecordOnPage = computed(() => (props.currentPage - 1) * props.currentPerPage + 1);
+    const lastRecordOnPage = computed(() => Math.min(props.totalRecords, props.currentPage * props.currentPerPage));
+    const recordInfo = computed(() => {
+      let first = firstRecordOnPage.value;
+      const last = lastRecordOnPage.value;
       if (last === 0) {
         first = 0;
       }
-
-      return `${first} - ${last} ${this.ofText} ${this.totalRecords}`;
-    },
-    infoParams() {
-      let first = this.firstRecordOnPage;
-      const last = this.lastRecordOnPage;
+      return `${first} - ${last} ${props.ofText} ${props.totalRecords}`;
+    });
+    const infoParams = computed(() => {
+      let first = firstRecordOnPage.value;
+      const last = lastRecordOnPage.value;
       if (last === 0) {
         first = 0;
       }
       return {
         firstRecordOnPage: first,
         lastRecordOnPage: last,
-        totalRecords: this.totalRecords,
-        currentPage: this.currentPage,
-        totalPages: this.lastPage,
+        totalRecords: props.totalRecords,
+        currentPage: props.currentPage,
+        totalPages: props.lastPage
       };
-    },
-  },
-  methods: {
-    getId() {
-      return `vgt-page-input-${Math.floor(Math.random() * Date.now())}`;
-    },
-    changePage(event) {
+    });
+    const data = reactive({
+      id: getId()
+    });
+    const changePage = (event) => {
       const value = parseInt(event.target.value, 10);
-
       //! invalid number
-      if (Number.isNaN(value)
-        || value > this.lastPage
-        || value < 1) {
-        event.target.value = this.currentPage;
-        return false;
+      if (Number.isNaN(value) || value > props.lastPage || value < 1) {
+        event.target.value = props.currentPage.toString();
       }
-
-      //* valid number
-      event.target.value = value;
-      this.$emit('page-changed', value);
-    },
-  },
-  mounted() {
-  },
-  components: {
-  },
-};
-
+      event.target.value = value.toString();
+      ctx.emit("page-changed", value);
+    };
+    return {
+      ...toRefs(data),
+      pageInfo,
+      firstRecordOnPage,
+      lastRecordOnPage,
+      recordInfo,
+      infoParams,
+      changePage
+    };
+  }
+});
 const _hoisted_1$6 = { class: "footer__navigation__page-info" };
 const _hoisted_2$6 = { key: 0 };
 const _hoisted_3$6 = ["for"];
 const _hoisted_4$6 = ["id", "value"];
-const _hoisted_5$6 = /*#__PURE__*/createElementVNode("span", {
+const _hoisted_5$6 = /* @__PURE__ */ createElementVNode("span", {
   id: "change-page-hint",
-  style: {"display":"none"}
-}, " Type a page number and press Enter to change the page. ", -1 /* HOISTED */);
-const _hoisted_6$6 = { key: 2 };
-
+  style: { "display": "none" }
+}, " Type a page number and press Enter to change the page. ", -1);
+const _hoisted_6$4 = { key: 2 };
 function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
-  return (openBlock(), createElementBlock("div", _hoisted_1$6, [
-    ($props.infoFn)
-      ? (openBlock(), createElementBlock("div", _hoisted_2$6, toDisplayString($props.infoFn($options.infoParams)), 1 /* TEXT */))
-      : ($props.mode === 'pages')
-        ? (openBlock(), createElementBlock("form", {
-            key: 1,
-            onSubmit: _cache[1] || (_cache[1] = withModifiers(() => {}, ["prevent"]))
-          }, [
-            createElementVNode("label", {
-              for: $data.id,
-              class: "page-info__label"
-            }, [
-              createElementVNode("span", null, toDisplayString($props.pageText), 1 /* TEXT */),
-              createElementVNode("input", {
-                id: $data.id,
-                "aria-describedby": "change-page-hint",
-                "aria-controls": "vgb-table",
-                class: "footer__navigation__page-info__current-entry",
-                type: "text",
-                onKeyup: _cache[0] || (_cache[0] = withKeys(withModifiers((...args) => ($options.changePage && $options.changePage(...args)), ["stop"]), ["enter"])),
-                value: $props.currentPage
-              }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_4$6),
-              createElementVNode("span", null, toDisplayString($options.pageInfo), 1 /* TEXT */)
-            ], 8 /* PROPS */, _hoisted_3$6),
-            _hoisted_5$6
-          ], 32 /* HYDRATE_EVENTS */))
-        : (openBlock(), createElementBlock("div", _hoisted_6$6, toDisplayString($options.recordInfo), 1 /* TEXT */))
-  ]))
+  return openBlock(), createElementBlock("div", _hoisted_1$6, [
+    _ctx.infoFn ? (openBlock(), createElementBlock("div", _hoisted_2$6, toDisplayString(_ctx.infoFn(_ctx.infoParams)), 1)) : _ctx.mode === "pages" ? (openBlock(), createElementBlock("form", {
+      key: 1,
+      onSubmit: _cache[1] || (_cache[1] = withModifiers(() => {
+      }, ["prevent"]))
+    }, [
+      createElementVNode("label", {
+        for: _ctx.id,
+        class: "page-info__label"
+      }, [
+        createElementVNode("span", null, toDisplayString(_ctx.pageText), 1),
+        createElementVNode("input", {
+          id: _ctx.id,
+          "aria-describedby": "change-page-hint",
+          "aria-controls": "vgb-table",
+          class: "footer__navigation__page-info__current-entry",
+          type: "text",
+          onKeyup: _cache[0] || (_cache[0] = withKeys(withModifiers((...args) => _ctx.changePage && _ctx.changePage(...args), ["stop"]), ["enter"])),
+          value: _ctx.currentPage
+        }, null, 40, _hoisted_4$6),
+        createElementVNode("span", null, toDisplayString(_ctx.pageInfo), 1)
+      ], 8, _hoisted_3$6),
+      _hoisted_5$6
+    ], 32)) : (openBlock(), createElementBlock("div", _hoisted_6$4, toDisplayString(_ctx.recordInfo), 1))
+  ]);
 }
-var VgtPaginationPageInfo = /*#__PURE__*/_export_sfc(_sfc_main$6, [['render',_sfc_render$6]]);
+var PaginationPageInfo = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
 
-const _sfc_main$5 = {
-  name: 'VgtPagination',
+var Pagination_vue_vue_type_style_index_0_scoped_true_lang = '';
+
+const _sfc_main$5 = defineComponent({
+  name: "DtPagination",
   props: {
-    styleClass: { default: 'table table-bordered' },
-    total: { default: null },
-    perPage: {},
-    rtl: { default: false },
-    perPageDropdownEnabled: { default: true },
-    customRowsPerPageDropdown: { default() { return []; } },
-    paginateDropdownAllowAll: { default: true },
-    mode: { default: PAGINATION_MODES.Records },
-
-    // text options
-    nextText: { default: 'Next' },
-    prevText: { default: 'Prev' },
-    rowsPerPageText: { default: 'Rows per page:' },
-    ofText: { default: 'of' },
-    pageText: { default: 'page' },
-    allText: { default: 'All' },
-    infoFn: { default: null },
+    styleClass: {
+      type: String,
+      default: "uk-table uk-table-bordered"
+    },
+    total: { type: Number, default: null },
+    perPage: { type: Number },
+    rtl: { type: Boolean, default: false },
+    perPageDropdownEnabled: { type: Boolean, default: true },
+    customRowsPerPageDropdown: {
+      type: Array,
+      default: () => []
+    },
+    paginateDropdownAllowAll: { type: Boolean, default: true },
+    mode: { type: String, default: PAGINATION_MODES.Records },
+    nextText: { type: String, default: "Next" },
+    prevText: { type: String, default: "Prev" },
+    rowsPerPageText: { type: String, default: "Rows per page:" },
+    ofText: { type: String, default: "of" },
+    pageText: { type: String, default: "page" },
+    allText: { type: String, default: "All" },
+    infoFn: { type: Function, default: null }
   },
-
-  data() {
-    return {
-      id: this.getId(),
+  setup(props, ctx) {
+    const getId = () => `vgt-select-rpp-${Math.floor(Math.random() * Date.now())}`;
+    const data = reactive({
+      id: getId(),
       currentPage: 1,
       prevPage: 0,
       currentPerPage: 10,
-      rowsPerPageOptions: [],
-    };
-  },
-  watch: {
-    perPage: {
-      handler(newValue, oldValue) {
-        this.handlePerPage();
-        this.perPageChanged(oldValue);
-      },
-      immediate: true,
-    },
-
-    customRowsPerPageDropdown() {
-      this.handlePerPage();
-    },
-
-    total: {
-      handler(newValue, oldValue) {
-        if(this.rowsPerPageOptions.indexOf(this.currentPerPage) === -1) {
-          this.currentPerPage = newValue;
-        }
-      }
-    }
-  },
-
-  computed: {
-    // Number of pages
-    pagesCount() {
-      const quotient = Math.floor(this.total / this.currentPerPage);
-      const remainder = this.total % this.currentPerPage;
-
-      return remainder === 0 ? quotient : quotient + 1;
-    },
-
-    // Can go to next page
-    nextIsPossible() {
-      return this.currentPage < this.pagesCount;
-    },
-
-    // Can go to previous page
-    prevIsPossible() {
-      return this.currentPage > 1;
-    },
-  },
-
-  methods: {
-    getId() {
-      return `vgt-select-rpp-${Math.floor(Math.random() * Date.now())}`;
-    },
-    // Change current page
-    changePage(pageNumber, emit = true) {
-      if (pageNumber > 0 && this.total > this.currentPerPage * (pageNumber - 1)) {
-        this.prevPage = this.currentPage;
-        this.currentPage = pageNumber;
-        this.pageChanged(emit);
-      }
-    },
-
-    // Go to next page
-    nextPage() {
-      if (this.nextIsPossible) {
-        this.prevPage = this.currentPage;
-        ++this.currentPage;
-        this.pageChanged();
-      }
-    },
-
-    // Go to previous page
-    previousPage() {
-      if (this.prevIsPossible) {
-        this.prevPage = this.currentPage;
-        --this.currentPage;
-        this.pageChanged();
-      }
-    },
-
-    // Indicate page changing
-    pageChanged(emit = true) {
+      rowsPerPageOptions: []
+    });
+    const pageChanged = (emit = true) => {
       const payload = {
-        currentPage: this.currentPage,
-        prevPage: this.prevPage,
+        currentPage: data.currentPage,
+        prevPage: data.prevPage,
+        noEmit: false
       };
-      if (!emit) payload.noEmit = true;
-      this.$emit('page-changed', payload);
-    },
-
-    // Indicate per page changing
-    perPageChanged(oldValue) {
-      // go back to first page
+      if (!emit)
+        payload.noEmit = true;
+      ctx.emit("page-changed", payload);
+    };
+    const changePage = (pageNumber, emit = true) => {
+      if (pageNumber > 0 && props.total > data.currentPerPage * (pageNumber - 1)) {
+        data.prevPage = data.currentPage;
+        data.currentPage = pageNumber;
+        pageChanged(emit);
+      }
+    };
+    const pagesCount = computed(() => {
+      const quotient = Math.floor(props.total / data.currentPerPage);
+      const remainder = props.total % data.currentPerPage;
+      return remainder === 0 ? quotient : quotient + 1;
+    });
+    const nextIsPossible = computed(() => data.currentPage < pagesCount.value);
+    const prevIsPossible = computed(() => data.currentPage > 1);
+    const nextPage = () => {
+      if (nextIsPossible.value) {
+        data.prevPage = data.currentPage;
+        data.currentPage += 1;
+        pageChanged();
+      }
+    };
+    const previousPage = () => {
+      if (prevIsPossible.value) {
+        data.prevPage = data.currentPage;
+        data.currentPage -= 1;
+        pageChanged();
+      }
+    };
+    const perPageChanged = (oldValue) => {
       if (oldValue) {
-        //* only emit if this isn't first initialization
-        this.$emit('per-page-changed', { currentPerPage: this.currentPerPage });
+        ctx.emit("per-page-changed", { currentPerPage: data.currentPerPage });
       }
-      this.changePage(1, false);
-    },
-
-    // Handle per page changing
-    handlePerPage() {
-      //* if there's a custom dropdown then we use that
-      if (this.customRowsPerPageDropdown !== null
-        && (Array.isArray(this.customRowsPerPageDropdown)
-        && this.customRowsPerPageDropdown.length !== 0)) {
-        this.rowsPerPageOptions = JSON.parse(JSON.stringify(this.customRowsPerPageDropdown));
+      changePage(1, false);
+    };
+    const handlePerPage = () => {
+      if (props.customRowsPerPageDropdown !== null && (Array.isArray(props.customRowsPerPageDropdown) && props.customRowsPerPageDropdown.length !== 0)) {
+        data.rowsPerPageOptions = JSON.parse(JSON.stringify(props.customRowsPerPageDropdown));
       } else {
-        //* otherwise we use the default rows per page dropdown
-        this.rowsPerPageOptions = JSON.parse(JSON.stringify(DEFAULT_ROWS_PER_PAGE_DROPDOWN));
+        data.rowsPerPageOptions = JSON.parse(JSON.stringify(DEFAULT_ROWS_PER_PAGE_DROPDOWN));
       }
-
-      if (this.perPage) {
-        this.currentPerPage = this.perPage;
-        // if perPage doesn't already exist, we add it
+      if (props.perPage) {
+        data.currentPerPage = props.perPage;
         let found = false;
-        for (let i = 0; i < this.rowsPerPageOptions.length; i++) {
-          if (this.rowsPerPageOptions[i] === this.perPage) {
+        for (let i = 0; i < data.rowsPerPageOptions.length; i += 1) {
+          if (data.rowsPerPageOptions[i] === props.perPage) {
             found = true;
           }
         }
-        if (!found && this.perPage !== -1) {
-          this.rowsPerPageOptions.unshift(this.perPage);
+        if (!found && props.perPage !== -1) {
+          data.rowsPerPageOptions.unshift(props.perPage);
         }
       } else {
-        // reset to default
-        this.currentPerPage = 10;
+        data.currentPerPage = 10;
       }
-    },
+    };
+    watch(() => props.perPage, (_, oldValue) => {
+      handlePerPage();
+      perPageChanged(oldValue);
+    }, { immediate: true });
+    watch(() => props.customRowsPerPageDropdown, () => {
+      handlePerPage();
+    });
+    watch(() => props.total, (newValue) => {
+      if (data.rowsPerPageOptions.indexOf(data.currentPerPage) === -1) {
+        data.currentPerPage = newValue;
+      }
+    });
+    return {
+      ...toRefs(data),
+      getId,
+      changePage,
+      pageChanged,
+      nextPage,
+      previousPage,
+      perPageChanged,
+      handlePerPage,
+      pagesCount,
+      nextIsPossible,
+      prevIsPossible
+    };
   },
-
-  mounted() {
-  },
-
   components: {
-    'pagination-page-info': VgtPaginationPageInfo,
-  },
-};
-
+    PaginationPageInfo
+  }
+});
 const _hoisted_1$5 = { class: "vgt-wrap__footer vgt-clearfix" };
 const _hoisted_2$5 = {
   key: 0,
@@ -2646,332 +2635,292 @@ const _hoisted_2$5 = {
 const _hoisted_3$5 = ["for"];
 const _hoisted_4$5 = ["id"];
 const _hoisted_5$5 = ["value"];
-const _hoisted_6$5 = ["value"];
-const _hoisted_7$4 = { class: "footer__navigation vgt-pull-right" };
-
+const _hoisted_6$3 = ["value"];
+const _hoisted_7$3 = { class: "footer__navigation vgt-pull-right" };
 function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_pagination_page_info = resolveComponent("pagination-page-info");
-
-  return (openBlock(), createElementBlock("div", _hoisted_1$5, [
-    ($props.perPageDropdownEnabled)
-      ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
-          createElementVNode("form", null, [
-            createElementVNode("label", {
-              for: $data.id,
-              class: "footer__row-count__label"
-            }, toDisplayString($props.rowsPerPageText) + ":", 9 /* TEXT, PROPS */, _hoisted_3$5),
-            withDirectives(createElementVNode("select", {
-              id: $data.id,
-              autocomplete: "off",
-              name: "perPageSelect",
-              class: "footer__row-count__select",
-              "onUpdate:modelValue": _cache[0] || (_cache[0] = $event => (($data.currentPerPage) = $event)),
-              onChange: _cache[1] || (_cache[1] = (...args) => ($options.perPageChanged && $options.perPageChanged(...args))),
-              "aria-controls": "vgt-table"
-            }, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList($data.rowsPerPageOptions, (option, idx) => {
-                return (openBlock(), createElementBlock("option", {
-                  key: idx,
-                  value: option
-                }, toDisplayString(option), 9 /* TEXT, PROPS */, _hoisted_5$5))
-              }), 128 /* KEYED_FRAGMENT */)),
-              ($props.paginateDropdownAllowAll)
-                ? (openBlock(), createElementBlock("option", {
-                    key: 0,
-                    value: $props.total
-                  }, toDisplayString($props.allText), 9 /* TEXT, PROPS */, _hoisted_6$5))
-                : createCommentVNode("v-if", true)
-            ], 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_4$5), [
-              [vModelSelect, $data.currentPerPage]
-            ])
-          ])
-        ]))
-      : createCommentVNode("v-if", true),
-    createElementVNode("div", _hoisted_7$4, [
-      createVNode(_component_pagination_page_info, {
-        onPageChanged: $options.changePage,
-        "total-records": $props.total,
-        "last-page": $options.pagesCount,
-        "current-page": $data.currentPage,
-        "current-per-page": $data.currentPerPage,
-        "of-text": $props.ofText,
-        "page-text": $props.pageText,
-        "info-fn": $props.infoFn,
-        mode: $props.mode
-      }, null, 8 /* PROPS */, ["onPageChanged", "total-records", "last-page", "current-page", "current-per-page", "of-text", "page-text", "info-fn", "mode"]),
-      createElementVNode("button", {
-        type: "button",
-        "aria-controls": "vgt-table",
-        class: normalizeClass(["footer__navigation__page-btn", { disabled: !$options.prevIsPossible }]),
-        onClick: _cache[2] || (_cache[2] = withModifiers((...args) => ($options.previousPage && $options.previousPage(...args)), ["prevent","stop"]))
-      }, [
-        createElementVNode("span", {
-          "aria-hidden": "true",
-          class: normalizeClass(["chevron", { 'left': !$props.rtl, 'right': $props.rtl }])
-        }, null, 2 /* CLASS */),
-        createElementVNode("span", null, toDisplayString($props.prevText), 1 /* TEXT */)
-      ], 2 /* CLASS */),
-      createElementVNode("button", {
-        type: "button",
-        "aria-controls": "vgt-table",
-        class: normalizeClass(["footer__navigation__page-btn", { disabled: !$options.nextIsPossible }]),
-        onClick: _cache[3] || (_cache[3] = withModifiers((...args) => ($options.nextPage && $options.nextPage(...args)), ["prevent","stop"]))
-      }, [
-        createElementVNode("span", null, toDisplayString($props.nextText), 1 /* TEXT */),
-        createElementVNode("span", {
-          "aria-hidden": "true",
-          class: normalizeClass(["chevron", { 'right': !$props.rtl, 'left': $props.rtl }])
-        }, null, 2 /* CLASS */)
-      ], 2 /* CLASS */)
-    ])
-  ]))
-}
-var VgtPagination = /*#__PURE__*/_export_sfc(_sfc_main$5, [['render',_sfc_render$5]]);
-
-const _sfc_main$4 = {
-  name: 'VgtGlobalSearch',
-  props: [
-    'value',
-    'searchEnabled',
-    'globalSearchPlaceholder',
-  ],
-  emits: [
-    'input',
-    'keyup',
-    'enter',
-  ],
-  data() {
-    return {
-      globalSearchTerm: null,
-      id: this.getId(),
-    };
-  },
-  computed: {
-    showControlBar() {
-      if (this.searchEnabled) return true;
-      if (this.$slots && this.$slots['internal-table-actions']) return true;
-      return false;
-    },
-  },
-  methods: {
-    updateValue(value) {
-      this.$emit('input', value);
-      this.$emit('keyup', value);
-    },
-    entered(value) {
-      this.$emit('enter', value);
-    },
-    getId() {
-      return `vgt-search-${Math.floor(Math.random() * Date.now())}`;
-    },
-  },
-};
-
-const _hoisted_1$4 = {
-  key: 0,
-  class: "vgt-global-search vgt-clearfix"
-};
-const _hoisted_2$4 = { class: "vgt-global-search__input vgt-pull-left" };
-const _hoisted_3$4 = ["for"];
-const _hoisted_4$4 = /*#__PURE__*/createElementVNode("span", {
-  "aria-hidden": "true",
-  class: "input__icon"
-}, [
-  /*#__PURE__*/createElementVNode("div", { class: "magnifying-glass" })
-], -1 /* HOISTED */);
-const _hoisted_5$4 = /*#__PURE__*/createElementVNode("span", { class: "sr-only" }, "Search", -1 /* HOISTED */);
-const _hoisted_6$4 = [
-  _hoisted_4$4,
-  _hoisted_5$4
-];
-const _hoisted_7$3 = ["id", "placeholder", "value"];
-const _hoisted_8$3 = { class: "vgt-global-search__actions vgt-pull-right" };
-
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
-  return ($options.showControlBar)
-    ? (openBlock(), createElementBlock("div", _hoisted_1$4, [
-        createElementVNode("div", _hoisted_2$4, [
-          ($props.searchEnabled)
-            ? (openBlock(), createElementBlock("form", {
-                key: 0,
-                onSubmit: _cache[2] || (_cache[2] = withModifiers(() => {}, ["prevent"])),
-                role: "search"
-              }, [
-                createElementVNode("label", { for: $data.id }, _hoisted_6$4, 8 /* PROPS */, _hoisted_3$4),
-                createElementVNode("input", {
-                  id: $data.id,
-                  type: "text",
-                  class: "vgt-input vgt-pull-left",
-                  placeholder: $props.globalSearchPlaceholder,
-                  value: $props.value,
-                  onInput: _cache[0] || (_cache[0] = $event => ($options.updateValue($event.target.value))),
-                  onKeyup: _cache[1] || (_cache[1] = withKeys($event => ($options.entered($event.target.value)), ["enter"]))
-                }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_7$3)
-              ], 32 /* HYDRATE_EVENTS */))
-            : createCommentVNode("v-if", true)
-        ]),
-        createElementVNode("div", _hoisted_8$3, [
-          renderSlot(_ctx.$slots, "internal-table-actions")
+  return openBlock(), createElementBlock("div", _hoisted_1$5, [
+    _ctx.perPageDropdownEnabled ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
+      createElementVNode("form", null, [
+        createElementVNode("label", {
+          for: _ctx.id,
+          class: "footer__row-count__label"
+        }, toDisplayString(_ctx.rowsPerPageText) + ":", 9, _hoisted_3$5),
+        withDirectives(createElementVNode("select", {
+          id: _ctx.id,
+          autocomplete: "off",
+          name: "perPageSelect",
+          class: "footer__row-count__select",
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.currentPerPage = $event),
+          onChange: _cache[1] || (_cache[1] = (...args) => _ctx.perPageChanged && _ctx.perPageChanged(...args)),
+          "aria-controls": "vgt-table"
+        }, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.rowsPerPageOptions, (option, idx) => {
+            return openBlock(), createElementBlock("option", {
+              key: idx,
+              value: option
+            }, toDisplayString(option), 9, _hoisted_5$5);
+          }), 128)),
+          _ctx.paginateDropdownAllowAll ? (openBlock(), createElementBlock("option", {
+            key: 0,
+            value: _ctx.total
+          }, toDisplayString(_ctx.allText), 9, _hoisted_6$3)) : createCommentVNode("", true)
+        ], 40, _hoisted_4$5), [
+          [vModelSelect, _ctx.currentPerPage]
         ])
-      ]))
-    : createCommentVNode("v-if", true)
+      ])
+    ])) : createCommentVNode("", true),
+    createElementVNode("div", _hoisted_7$3, [
+      createVNode(_component_pagination_page_info, {
+        onPageChanged: _ctx.changePage,
+        "total-records": _ctx.total,
+        "last-page": _ctx.pagesCount,
+        "current-page": _ctx.currentPage,
+        "current-per-page": _ctx.currentPerPage,
+        "of-text": _ctx.ofText,
+        "page-text": _ctx.pageText,
+        "info-fn": _ctx.infoFn,
+        mode: _ctx.mode
+      }, null, 8, ["onPageChanged", "total-records", "last-page", "current-page", "current-per-page", "of-text", "page-text", "info-fn", "mode"]),
+      createElementVNode("button", {
+        type: "button",
+        "aria-controls": "vgt-table",
+        class: normalizeClass(["footer__navigation__page-btn", { disabled: !_ctx.prevIsPossible }]),
+        onClick: _cache[2] || (_cache[2] = withModifiers((...args) => _ctx.previousPage && _ctx.previousPage(...args), ["prevent", "stop"]))
+      }, [
+        createElementVNode("span", {
+          "aria-hidden": "true",
+          class: normalizeClass(["chevron", { "left": !_ctx.rtl, "right": _ctx.rtl }])
+        }, null, 2),
+        createElementVNode("span", null, toDisplayString(_ctx.prevText), 1)
+      ], 2),
+      createElementVNode("button", {
+        type: "button",
+        "aria-controls": "vgt-table",
+        class: normalizeClass(["footer__navigation__page-btn", { disabled: !_ctx.nextIsPossible }]),
+        onClick: _cache[3] || (_cache[3] = withModifiers((...args) => _ctx.nextPage && _ctx.nextPage(...args), ["prevent", "stop"]))
+      }, [
+        createElementVNode("span", null, toDisplayString(_ctx.nextText), 1),
+        createElementVNode("span", {
+          "aria-hidden": "true",
+          class: normalizeClass(["chevron", { "right": !_ctx.rtl, "left": _ctx.rtl }])
+        }, null, 2)
+      ], 2)
+    ])
+  ]);
 }
-var VgtGlobalSearch = /*#__PURE__*/_export_sfc(_sfc_main$4, [['render',_sfc_render$4]]);
+var DtPagination = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-b78d3532"]]);
 
-const _sfc_main$3 = {
-  name: 'VgtFilterRow',
-  props: [
-    'lineNumbers',
-    'columns',
-    'typedColumns',
-    'globalSearchEnabled',
-    'selectable',
-    'mode',
-  ],
-  emits: ['filter-changed'],
-  watch: {
-    columns: {
-      handler(newValue, oldValue) {
-        this.populateInitialFilters();
-      },
-      deep: true,
-      immediate: true,
+const _sfc_main$4 = defineComponent({
+  name: "GlobalSearch",
+  props: {
+    value: {
+      type: String
     },
+    searchEnabled: {
+      type: Boolean
+    },
+    globalSearchPlaceholder: {
+      type: String
+    }
   },
-  data() {
-    return {
-      columnFilters: {},
-      timer: null,
+  emits: [
+    "input",
+    "keyup",
+    "enter"
+  ],
+  setup(props, ctx) {
+    const showControlBar = computed(() => {
+      if (props.searchEnabled)
+        return true;
+      if (ctx.slots && ctx.slots["internal-table-actions"])
+        return true;
+      return false;
+    });
+    const getId = () => `vgt-search-${Math.floor(Math.random() * Date.now())}`;
+    const entered = (ev) => {
+      ctx.emit("enter", ev.target.value);
     };
-  },
-  computed: {
+    const updateValue = (ev) => {
+      ctx.emit("input", ev.target.value);
+      ctx.emit("keyup", ev.target.value);
+    };
+    const data = reactive({
+      globalSearchTerm: null,
+      id: getId()
+    });
+    return {
+      ...toRefs(data),
+      showControlBar,
+      entered,
+      updateValue
+    };
+  }
+});
+const _hoisted_1$4 = { key: 0 };
+const _hoisted_2$4 = { class: "uk-align-right" };
+const _hoisted_3$4 = /* @__PURE__ */ createElementVNode("span", { "uk-search-icon": "" }, null, -1);
+const _hoisted_4$4 = ["id", "placeholder", "value"];
+const _hoisted_5$4 = { class: "uk-align-left" };
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  return _ctx.showControlBar ? (openBlock(), createElementBlock("div", _hoisted_1$4, [
+    createElementVNode("div", _hoisted_2$4, [
+      _ctx.searchEnabled ? (openBlock(), createElementBlock("form", {
+        key: 0,
+        onSubmit: _cache[2] || (_cache[2] = withModifiers(() => {
+        }, ["prevent"])),
+        role: "search",
+        class: "uk-search uk-search-default"
+      }, [
+        _hoisted_3$4,
+        createElementVNode("input", {
+          id: _ctx.id,
+          type: "text",
+          class: "uk-search-input uk-width-large",
+          placeholder: _ctx.globalSearchPlaceholder,
+          value: _ctx.value,
+          onInput: _cache[0] || (_cache[0] = ($event) => _ctx.updateValue($event)),
+          onKeyup: _cache[1] || (_cache[1] = withKeys(($event) => _ctx.entered($event), ["enter"]))
+        }, null, 40, _hoisted_4$4)
+      ], 32)) : createCommentVNode("", true)
+    ]),
+    createElementVNode("div", _hoisted_5$4, [
+      renderSlot(_ctx.$slots, "internal-table-actions")
+    ])
+  ])) : createCommentVNode("", true);
+}
+var VgtGlobalSearch = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
 
-    // to create a filter row, we need to
-    // make sure that there is atleast 1 column
-    // that requires filtering
-    hasFilterRow() {
-      // if (this.mode === 'remote' || !this.globalSearchEnabled) {
-      for (let i = 0; i < this.columns.length; i++) {
-        const col = this.columns[i];
+var FilterRow_vue_vue_type_style_index_0_scoped_true_lang = '';
+
+const _sfc_main$3 = defineComponent({
+  name: "FilterRow",
+  props: {
+    lineNumbers: {
+      type: Boolean
+    },
+    columns: {
+      type: Array,
+      default: () => []
+    },
+    typedColumns: {
+      type: Array
+    },
+    globalSearchEnabled: {
+      type: Boolean
+    },
+    selectable: {
+      type: Boolean
+    },
+    mode: {
+      type: String
+    }
+  },
+  emits: ["filter-changed"],
+  setup(props, ctx) {
+    const data = reactive({
+      columnFilters: {},
+      timer: 0
+    });
+    const reset = (emitEvent = false) => {
+      data.columnFilters = {};
+      if (emitEvent) {
+        ctx.emit("filter-changed", data.columnFilters);
+      }
+    };
+    const isFilterable = (column) => column.filterOptions && column.filterOptions.enabled;
+    const isDropdown = (column) => isFilterable(column) && column.filterOptions.filterDropdownItems && column.filterOptions.filterDropdownItems.length;
+    const fieldKey = (field) => {
+      if (typeof field === "function" && field.name) {
+        return field.name;
+      }
+      return field;
+    };
+    const isDropdownObjects = (column) => isDropdown(column) && typeof column.filterOptions.filterDropdownItems[0] === "object";
+    const isDropdownArray = (column) => isDropdown(column) && typeof column.filterOptions.filterDropdownItems[0] !== "object";
+    const getClasses = (column) => {
+      const firstClass = "filter-th";
+      return column.filterOptions && column.filterOptions.styleClass ? [firstClass, ...column.filterOptions.styleClass.split(" ")].join(" ") : firstClass;
+    };
+    const getPlaceholder = (column) => {
+      const placeholder = isFilterable(column) && column.filterOptions.placeholder || `Filter ${column.label}`;
+      return placeholder;
+    };
+    const getName = (column) => `vgt-${fieldKey(column.field)}`;
+    const updateFiltersImmediately = (field, event) => {
+      data.columnFilters[fieldKey(field)] = event.target.value;
+      ctx.emit("filter-changed", data.columnFilters);
+    };
+    const updateFiltersOnEnter = (column, event) => {
+      if (data.timer)
+        window.clearTimeout(data.timer);
+      updateFiltersImmediately(column.field, event);
+    };
+    const updateFilters = (column, value) => {
+      window.clearTimeout(data.timer);
+      data.timer = window.setTimeout(() => {
+        updateFiltersImmediately(column.field, value);
+      }, 400);
+    };
+    const updateFiltersOnKeyup = (column, event) => {
+      if (column.filterOptions.trigger === "enter")
+        return;
+      updateFilters(column, event.target.value);
+    };
+    const populateInitialFilters = () => {
+      for (let i = 0; i < props.columns.length; i += 1) {
+        const col = props.columns[i];
+        if (isFilterable(col) && typeof col.filterOptions.filterValue !== "undefined" && col.filterOptions.filterValue !== null) {
+          data.columnFilters[fieldKey(col.field)] = col.filterOptions.filterValue;
+        }
+      }
+      ctx.emit("filter-changed", data.columnFilters);
+    };
+    const updateSlotFilter = (column, value) => {
+      const fieldToFilter = column.filterOptions.slotFilterField || column.field;
+      if (typeof column.filterOptions.formatValue === "function") {
+        value = column.filterOptions.formatValue(value);
+      }
+      updateFiltersImmediately(fieldToFilter, value);
+    };
+    watch(() => props.columns, () => {
+      populateInitialFilters();
+    }, { immediate: true, deep: true });
+    const hasFilterRow = computed(() => {
+      for (let i = 0; i < props.columns.length; i += 1) {
+        const col = props.columns[i];
         if (col.filterOptions && col.filterOptions.enabled) {
           return true;
         }
       }
-      // }
       return false;
-    },
-  },
-  methods: {
-
-    fieldKey(field) {
-      if (typeof(field) === 'function' && field.name) {
-        return field.name;
-      }
-      return field;
-    },
-
-    reset(emitEvent = false) {
-      this.columnFilters = {};
-
-      if (emitEvent) {
-        this.$emit('filter-changed', this.columnFilters);
-      }
-    },
-
-    isFilterable(column) {
-      return column.filterOptions
-        && column.filterOptions.enabled;
-    },
-
-    isDropdown(column) {
-      return this.isFilterable(column)
-        && column.filterOptions.filterDropdownItems
-        && column.filterOptions.filterDropdownItems.length;
-    },
-
-    isDropdownObjects(column) {
-      return this.isDropdown(column)
-        && typeof column.filterOptions.filterDropdownItems[0] === 'object';
-    },
-
-    isDropdownArray(column) {
-      return this.isDropdown(column)
-        && typeof column.filterOptions.filterDropdownItems[0] !== 'object';
-    },
-
-    getClasses(column) {
-      const firstClass = 'filter-th';
-      return (column.filterOptions && column.filterOptions.styleClass) ? [firstClass, ...column.filterOptions.styleClass.split(' ')].join(' ') : firstClass;
-    },
-
-    // get column's defined placeholder or default one
-    getPlaceholder(column) {
-      const placeholder = (this.isFilterable(column) && column.filterOptions.placeholder) || `Filter ${column.label}`;
-      return placeholder;
-    },
-
-    getName(column) {
-      return `vgt-${this.fieldKey(column.field)}`;
-    },
-
-    updateFiltersOnEnter(column, value) {
-      if (this.timer) clearTimeout(this.timer);
-      this.updateFiltersImmediately(column.field, value);
-    },
-
-    updateFiltersOnKeyup(column, value) {
-      // if the trigger is enter, we don't filter on keyup
-      if (column.filterOptions.trigger === 'enter') return;
-      this.updateFilters(column, value);
-    },
-
-    updateSlotFilter(column, value) {
-      let fieldToFilter = column.filterOptions.slotFilterField || column.field;
-      if (typeof column.filterOptions.formatValue === 'function') {
-        value = column.filterOptions.formatValue(value);
-      }
-      this.updateFiltersImmediately(fieldToFilter, value);
-    },
-
-    // since vue doesn't detect property addition and deletion, we
-    // need to create helper function to set property etc
-    updateFilters(column, value) {
-      if (this.timer) clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
-        this.updateFiltersImmediately(column.field, value);
-      }, 400);
-    },
-
-    updateFiltersImmediately(field, value) {
-      this.columnFilters[this.fieldKey(field)] = value;
-      this.$emit('filter-changed', this.columnFilters);
-    },
-
-    populateInitialFilters() {
-      for (let i = 0; i < this.columns.length; i++) {
-        const col = this.columns[i];
-        // lets see if there are initial
-        // filters supplied by user
-        if (this.isFilterable(col)
-          && typeof col.filterOptions.filterValue !== 'undefined'
-          && col.filterOptions.filterValue !== null) {
-          this.columnFilters[this.fieldKey(col.field)] = col.filterOptions.filterValue;
-          // this.updateFilters(col, col.filterOptions.filterValue);
-          // this.$set(col.filterOptions, 'filterValue', undefined);
-        }
-      }
-      //* lets emit event once all filters are set
-      this.$emit('filter-changed', this.columnFilters);
-    },
-  },
-};
-
+    });
+    return {
+      ...toRefs(data),
+      isFilterable,
+      fieldKey,
+      reset,
+      isDropdown,
+      isDropdownObjects,
+      isDropdownArray,
+      getClasses,
+      getPlaceholder,
+      getName,
+      updateFiltersOnEnter,
+      updateFiltersImmediately,
+      updateFilters,
+      updateFiltersOnKeyup,
+      updateSlotFilter,
+      hasFilterRow
+    };
+  }
+});
 const _hoisted_1$3 = { key: 0 };
 const _hoisted_2$3 = { key: 0 };
 const _hoisted_3$3 = { key: 1 };
 const _hoisted_4$3 = { key: 0 };
 const _hoisted_5$3 = ["name", "placeholder", "value", "onKeyup", "onInput"];
-const _hoisted_6$3 = ["name", "value", "onChange"];
+const _hoisted_6$2 = ["name", "value", "onChange"];
 const _hoisted_7$2 = {
   value: "",
   key: "-1"
@@ -2983,144 +2932,115 @@ const _hoisted_10$2 = {
   key: "-1"
 };
 const _hoisted_11$1 = ["value"];
-
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
-  return ($options.hasFilterRow)
-    ? (openBlock(), createElementBlock("tr", _hoisted_1$3, [
-        ($props.lineNumbers)
-          ? (openBlock(), createElementBlock("th", _hoisted_2$3))
-          : createCommentVNode("v-if", true),
-        ($props.selectable)
-          ? (openBlock(), createElementBlock("th", _hoisted_3$3))
-          : createCommentVNode("v-if", true),
-        (openBlock(true), createElementBlock(Fragment, null, renderList($props.columns, (column, index) => {
-          return (openBlock(), createElementBlock(Fragment, { key: index }, [
-            (!column.hidden)
-              ? (openBlock(), createElementBlock("th", {
-                  key: 0,
-                  class: normalizeClass($options.getClasses(column))
-                }, [
-                  renderSlot(_ctx.$slots, "column-filter", {
-                    column: column,
-                    updateFilters: $options.updateSlotFilter
-                  }, () => [
-                    ($options.isFilterable(column))
-                      ? (openBlock(), createElementBlock("div", _hoisted_4$3, [
-                          (!$options.isDropdown(column))
-                            ? (openBlock(), createElementBlock("input", {
-                                key: 0,
-                                name: $options.getName(column),
-                                type: "text",
-                                class: "vgt-input",
-                                placeholder: $options.getPlaceholder(column),
-                                value: $data.columnFilters[$options.fieldKey(column.field)],
-                                onKeyup: withKeys($event => ($options.updateFiltersOnEnter(column, $event.target.value)), ["enter"]),
-                                onInput: $event => ($options.updateFiltersOnKeyup(column, $event.target.value))
-                              }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_5$3))
-                            : createCommentVNode("v-if", true),
-                          createCommentVNode(" options are a list of primitives "),
-                          ($options.isDropdownArray(column))
-                            ? (openBlock(), createElementBlock("select", {
-                                key: 1,
-                                name: $options.getName(column),
-                                class: "vgt-select",
-                                value: $data.columnFilters[$options.fieldKey(column.field)],
-                                onChange: $event => ($options.updateFiltersImmediately(column.field, $event.target.value))
-                              }, [
-                                createElementVNode("option", _hoisted_7$2, toDisplayString($options.getPlaceholder(column)), 1 /* TEXT */),
-                                (openBlock(true), createElementBlock(Fragment, null, renderList(column.filterOptions.filterDropdownItems, (option, i) => {
-                                  return (openBlock(), createElementBlock("option", {
-                                    key: i,
-                                    value: option
-                                  }, toDisplayString(option), 9 /* TEXT, PROPS */, _hoisted_8$2))
-                                }), 128 /* KEYED_FRAGMENT */))
-                              ], 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_6$3))
-                            : createCommentVNode("v-if", true),
-                          createCommentVNode(" options are a list of objects with text and value "),
-                          ($options.isDropdownObjects(column))
-                            ? (openBlock(), createElementBlock("select", {
-                                key: 2,
-                                name: $options.getName(column),
-                                class: "vgt-select",
-                                value: $data.columnFilters[$options.fieldKey(column.field)],
-                                onChange: $event => ($options.updateFiltersImmediately(column.field, $event.target.value))
-                              }, [
-                                createElementVNode("option", _hoisted_10$2, toDisplayString($options.getPlaceholder(column)), 1 /* TEXT */),
-                                (openBlock(true), createElementBlock(Fragment, null, renderList(column.filterOptions.filterDropdownItems, (option, i) => {
-                                  return (openBlock(), createElementBlock("option", {
-                                    key: i,
-                                    value: option.value
-                                  }, toDisplayString(option.text), 9 /* TEXT, PROPS */, _hoisted_11$1))
-                                }), 128 /* KEYED_FRAGMENT */))
-                              ], 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_9$2))
-                            : createCommentVNode("v-if", true)
-                        ]))
-                      : createCommentVNode("v-if", true)
-                  ])
-                ], 2 /* CLASS */))
-              : createCommentVNode("v-if", true)
-          ], 64 /* STABLE_FRAGMENT */))
-        }), 128 /* KEYED_FRAGMENT */))
-      ]))
-    : createCommentVNode("v-if", true)
+  return _ctx.hasFilterRow ? (openBlock(), createElementBlock("tr", _hoisted_1$3, [
+    _ctx.lineNumbers ? (openBlock(), createElementBlock("th", _hoisted_2$3)) : createCommentVNode("", true),
+    _ctx.selectable ? (openBlock(), createElementBlock("th", _hoisted_3$3)) : createCommentVNode("", true),
+    (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.columns, (column, index) => {
+      return openBlock(), createElementBlock(Fragment, { key: index }, [
+        !column.hidden ? (openBlock(), createElementBlock("th", {
+          key: 0,
+          class: normalizeClass(_ctx.getClasses(column))
+        }, [
+          renderSlot(_ctx.$slots, "column-filter", {
+            column,
+            updateFilters: _ctx.updateSlotFilter
+          }, () => [
+            _ctx.isFilterable(column) ? (openBlock(), createElementBlock("div", _hoisted_4$3, [
+              !_ctx.isDropdown(column) ? (openBlock(), createElementBlock("input", {
+                key: 0,
+                name: _ctx.getName(column),
+                type: "text",
+                class: "vgt-input",
+                placeholder: _ctx.getPlaceholder(column),
+                value: _ctx.columnFilters[_ctx.fieldKey(column.field)],
+                onKeyup: withKeys(($event) => _ctx.updateFiltersOnEnter(column, $event), ["enter"]),
+                onInput: ($event) => _ctx.updateFiltersOnKeyup(column, $event)
+              }, null, 40, _hoisted_5$3)) : createCommentVNode("", true),
+              _ctx.isDropdownArray(column) ? (openBlock(), createElementBlock("select", {
+                key: 1,
+                name: _ctx.getName(column),
+                class: "vgt-select",
+                value: _ctx.columnFilters[_ctx.fieldKey(column.field)],
+                onChange: ($event) => _ctx.updateFiltersImmediately(column.field, $event)
+              }, [
+                createElementVNode("option", _hoisted_7$2, toDisplayString(_ctx.getPlaceholder(column)), 1),
+                (openBlock(true), createElementBlock(Fragment, null, renderList(column.filterOptions.filterDropdownItems, (option, i) => {
+                  return openBlock(), createElementBlock("option", {
+                    key: i,
+                    value: option
+                  }, toDisplayString(option), 9, _hoisted_8$2);
+                }), 128))
+              ], 40, _hoisted_6$2)) : createCommentVNode("", true),
+              _ctx.isDropdownObjects(column) ? (openBlock(), createElementBlock("select", {
+                key: 2,
+                name: _ctx.getName(column),
+                class: "vgt-select",
+                value: _ctx.columnFilters[_ctx.fieldKey(column.field)],
+                onChange: ($event) => _ctx.updateFiltersImmediately(column.field, $event)
+              }, [
+                createElementVNode("option", _hoisted_10$2, toDisplayString(_ctx.getPlaceholder(column)), 1),
+                (openBlock(true), createElementBlock(Fragment, null, renderList(column.filterOptions.filterDropdownItems, (option, i) => {
+                  return openBlock(), createElementBlock("option", {
+                    key: i,
+                    value: option.value
+                  }, toDisplayString(option.text), 9, _hoisted_11$1);
+                }), 128))
+              ], 40, _hoisted_9$2)) : createCommentVNode("", true)
+            ])) : createCommentVNode("", true)
+          ], true)
+        ], 2)) : createCommentVNode("", true)
+      ], 64);
+    }), 128))
+  ])) : createCommentVNode("", true);
 }
-var VgtFilterRow = /*#__PURE__*/_export_sfc(_sfc_main$3, [['render',_sfc_render$3]]);
+var FilterRow = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-ce2fd3d0"]]);
 
 function getColumnFirstSortType(column) {
   return column.firstSortType || DEFAULT_SORT_TYPE;
 }
-
 function getCurrentPrimarySort(sortArray, column) {
-  return ( sortArray.length === 1 && sortArray[0].field === column.field )
-  ? sortArray[0].type
-  : undefined;
+  return sortArray.length === 1 && sortArray[0].field === column.field ? sortArray[0].type : void 0;
 }
-
 function getNextSort(currentSort, column) {
-  if (SORT_TYPES.Descending === getColumnFirstSortType(column)
-    && currentSort === SORT_TYPES.Ascending) {
-    return SORT_TYPES.None
-  } else if (currentSort === SORT_TYPES.Ascending) {
-    return SORT_TYPES.Descending;
-  }
-  if (SORT_TYPES.Descending === getColumnFirstSortType(column)
-    && currentSort === SORT_TYPES.Descending) {
-    return SORT_TYPES.Ascending;
-  } else if (currentSort === SORT_TYPES.Descending) {
+  if (SORT_TYPES.Descending === getColumnFirstSortType(column) && currentSort === SORT_TYPES.Ascending) {
     return SORT_TYPES.None;
   }
-
-  if (SORT_TYPES.Descending === getColumnFirstSortType(column)
-    && currentSort === SORT_TYPES.None) {
+  if (currentSort === SORT_TYPES.Ascending) {
     return SORT_TYPES.Descending;
-  } else {
+  }
+  if (SORT_TYPES.Descending === getColumnFirstSortType(column) && currentSort === SORT_TYPES.Descending) {
     return SORT_TYPES.Ascending;
   }
-
+  if (currentSort === SORT_TYPES.Descending) {
+    return SORT_TYPES.None;
+  }
+  if (SORT_TYPES.Descending === getColumnFirstSortType(column) && currentSort === SORT_TYPES.None) {
+    return SORT_TYPES.Descending;
+  }
+  return SORT_TYPES.Ascending;
 }
-
 function getIndex(sortArray, column) {
-  for (let i = 0; i < sortArray.length; i++) {
-    if (column.field === sortArray[i].field) return i;
+  for (let i = 0; i < sortArray.length; i += 1) {
+    if (column.field === sortArray[i].field)
+      return i;
   }
   return -1;
 }
-
 const primarySort = (sortArray, column) => {
   const currentPrimarySort = getCurrentPrimarySort(sortArray, column);
-  const nextPrimarySort = getNextSort(currentPrimarySort, column);
+  const nextPrimarySort = getNextSort(currentPrimarySort || SORT_TYPES.Ascending, column);
   return [{
     field: column.field,
-    type: currentPrimarySort ? nextPrimarySort : getColumnFirstSortType(column),
+    type: currentPrimarySort ? nextPrimarySort : getColumnFirstSortType(column)
   }];
 };
-
 const secondarySort = (sortArray, column) => {
   const index = getIndex(sortArray, column);
   if (index === -1) {
     sortArray.push({
       field: column.field,
-      type: getColumnFirstSortType(column),
+      type: getColumnFirstSortType(column)
     });
   } else {
     sortArray[index].type = getNextSort(sortArray[index].type, column);
@@ -3128,231 +3048,202 @@ const secondarySort = (sortArray, column) => {
   return sortArray;
 };
 
-const _sfc_main$2 = {
-  name: 'VgtTableHeader',
+var TableHeader_vue_vue_type_style_index_0_scoped_true_lang = '';
+
+const _sfc_main$2 = defineComponent({
+  name: "TableHeader",
   props: {
     lineNumbers: {
       default: false,
-      type: Boolean,
+      type: Boolean
     },
     selectable: {
       default: false,
-      type: Boolean,
+      type: Boolean
     },
     allSelected: {
       default: false,
-      type: Boolean,
+      type: Boolean
     },
     allSelectedIndeterminate: {
       default: false,
-      type: Boolean,
+      type: Boolean
     },
     columns: {
       type: Array,
+      required: true
     },
     mode: {
-      type: String,
+      type: String
     },
-    typedColumns: {},
-
-    //* Sort related
+    typedColumns: {
+      type: Array
+    },
     sortable: {
-      type: Boolean,
+      type: Boolean
     },
     multipleColumnSort: {
       type: Boolean,
-      default: true,
+      default: true
     },
-
     getClasses: {
       type: Function,
+      required: true
     },
-
-    //* search related
     searchEnabled: {
-      type: Boolean,
-    },
-
-    tableRef: {},
-
-    paginated: {},
-  },
-  emits: [
-    'toggle-select-all',
-    'sort-change',
-    'filter-changed',
-  ],
-  watch: {
-    columns: {
-      handler() {
-        this.setColumnStyles();
-      },
-      immediate: true,
+      type: Boolean
     },
     tableRef: {
-      handler() {
-        this.setColumnStyles();
-      },
-      immediate: true,
+      type: Object
     },
-    paginated: {
-      handler() {
-        if (this.tableRef) {
-          this.setColumnStyles();
-        }
-      },
-      deep: true,
-    },
+    paginated: {}
   },
-  data() {
-    return {
+  emits: ["toggle-select-all", "sort-change", "filter-changed"],
+  setup(props, ctx) {
+    const data = reactive({
       checkBoxThStyle: {},
       lineNumberThStyle: {},
       columnStyles: [],
       sorts: [],
-      ro: null
+      ro: null,
+      filterRow: {}
+    });
+    const toggleSelectAll = () => {
+      ctx.emit("toggle-select-all");
     };
-  },
-  computed: {
-
-  },
-  methods: {
-    reset() {
-      this.$refs['filter-row'].reset(true);
-    },
-    toggleSelectAll() {
-      this.$emit('toggle-select-all');
-    },
-    isSortableColumn(column) {
-      const { sortable } = column;
-      const isSortable = typeof sortable === 'boolean' ? sortable : this.sortable;
-      return isSortable;
-    },
-    sort(e, column) {
-      //* if column is not sortable, return right here
-      if (!this.isSortableColumn(column)) return;
-
-      if (e.shiftKey && this.multipleColumnSort) {
-        this.sorts = secondarySort(this.sorts, column);
+    const isSortableColumn = (column) => typeof column.sortable === "boolean" ? column.sortable : props.sortable;
+    const sort = (e, column) => {
+      if (!isSortableColumn(column))
+        return;
+      if (e.shiftKey && props.multipleColumnSort) {
+        data.sorts = secondarySort(data.sorts, column);
       } else {
-        this.sorts = primarySort(this.sorts, column);
+        data.sorts = primarySort(data.sorts, column);
       }
-      this.$emit('sort-change', this.sorts);
-    },
-
-    setInitialSort(sorts) {
-      this.sorts = sorts;
-      this.$emit('sort-change', this.sorts);
-    },
-
-    getColumnSort(column) {
-      for (let i = 0; i < this.sorts.length; i += 1) {
-        if (this.sorts[i].field === column.field) {
-          return this.sorts[i].type || 'asc';
+      ctx.emit("sort-change", data.sorts);
+    };
+    const setInitialSort = (sorts) => {
+      data.sorts = sorts;
+      ctx.emit("sort-change", data.sorts);
+    };
+    const getColumnSort = (column) => {
+      for (let i = 0; i < data.sorts.length; i += 1) {
+        if (data.sorts[i].field === column.field) {
+          return data.sorts[i].type || "asc";
         }
       }
       return null;
-    },
-
-    getColumnSortLong(column) {
-      return this.getColumnSort(column) === 'asc'
-        ? 'ascending'
-        : 'descending'
-    },
-
-    getHeaderClasses(column, index) {
-      const classes = Object.assign({}, this.getClasses(index, 'th'), {
-        sortable: this.isSortableColumn(column),
-        'sorting sorting-desc': this.getColumnSort(column) === 'desc',
-        'sorting sorting-asc': this.getColumnSort(column) === 'asc',
-      });
+    };
+    const getColumnSortLong = (column) => getColumnSort(column) === "asc" ? "ascending" : "descending";
+    const getHeaderClasses = (column, index) => {
+      const classes = {
+        sortable: isSortableColumn(column),
+        "sorting sorting-desc": getColumnSort(column) === "desc",
+        "sorting sorting-asc": getColumnSort(column) === "asc"
+      };
+      if (props.getClasses) {
+        return {
+          ...props.getClasses(index, "th"),
+          ...classes
+        };
+      }
       return classes;
-    },
-
-    filterRows(columnFilters) {
-      this.$emit('filter-changed', columnFilters);
-    },
-
-    getWidthStyle(dom) {
+    };
+    const filterRows = (columnFilters) => {
+      ctx.emit("filter-changed", columnFilters);
+    };
+    const getWidthStyle = (dom) => {
       if (window && window.getComputedStyle && dom) {
         const cellStyle = window.getComputedStyle(dom, null);
         return {
-          width: cellStyle.width,
+          width: cellStyle.width
         };
       }
       return {
-        width: 'auto',
+        width: "auto"
       };
-    },
-
-    setColumnStyles() {
+    };
+    const setColumnStyles = () => {
       const colStyles = [];
-      for (let i = 0; i < this.columns.length; i++) {
-        if (this.tableRef) {
+      for (let i = 0; i < props.columns.length; i += 1) {
+        if (props.tableRef) {
           let skip = 0;
-          if (this.selectable) skip++;
-          if (this.lineNumbers) skip++;
-          const cell = this.tableRef.rows[0].cells[i + skip];
-          colStyles.push(this.getWidthStyle(cell));
+          if (props.selectable)
+            skip += 1;
+          if (props.lineNumbers)
+            skip += 1;
+          const cell = props.tableRef.rows[0].cells[i + skip];
+          colStyles.push(getWidthStyle(cell));
         } else {
           colStyles.push({
-            minWidth: this.columns[i].width ? this.columns[i].width : 'auto',
-            maxWidth: this.columns[i].width ? this.columns[i].width : 'auto',
-            width: this.columns[i].width ? this.columns[i].width : 'auto',
+            minWidth: props.columns[i].width ? props.columns[i].width : "auto",
+            maxWidth: props.columns[i].width ? props.columns[i].width : "auto",
+            width: props.columns[i].width ? props.columns[i].width : "auto"
           });
         }
       }
-      this.columnStyles = colStyles;
-    },
-
-    getColumnStyle(column, index) {
+      data.columnStyles = colStyles;
+    };
+    const getColumnStyle = (column, index) => {
+      let i = index;
       const styleObject = {
-        minWidth: column.width ? column.width : 'auto',
-        maxWidth: column.width ? column.width : 'auto',
-        width: column.width ? column.width : 'auto',
+        minWidth: column.width ? column.width : "auto",
+        maxWidth: column.width ? column.width : "auto",
+        width: column.width ? column.width : "auto"
       };
-      //* if fixed header we need to get width from original table
-      if (this.tableRef) {
-        if (this.selectable) index++;
-        if (this.lineNumbers) index++;
-
-        const cell = this.tableRef.rows[0].cells[index];
+      if (props.tableRef) {
+        if (props.selectable)
+          i += 1;
+        if (props.lineNumbers)
+          i += 1;
+        const cell = props.tableRef.rows[0].cells[i];
         const cellStyle = window.getComputedStyle(cell, null);
         styleObject.width = cellStyle.width;
       }
       return styleObject;
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      // We're going to watch the parent element for resize events, and calculate column widths if it changes
-      if ('ResizeObserver' in window) {
-        this.ro = new ResizeObserver(() => {
-            this.setColumnStyles();
-        });
-        this.ro.observe(this.$parent.$el);
-
-        // If this is a fixed-header table, we want to observe each column header from the non-fixed header.
-        // You can imagine two columns swapping widths, which wouldn't cause the above to trigger.
-        // This gets the first tr element of the primary table header, and iterates through its children (the th elements)
-        if (this.tableRef) {
-          Array.from(this.$parent.$refs['table-header-primary'].$el.children[0].children).forEach((header) => {
-            this.ro.observe(header);
-          });
-        }
+    };
+    onBeforeUnmount(() => {
+      if (data.ro) {
+        data.ro.disconnect();
       }
     });
-  },
-  beforeDestroy() {
-    if (this.ro) {
-      this.ro.disconnect();
-    }
+    onMounted(() => {
+      nextTick(() => {
+      });
+    });
+    const wrapperStyles = (index) => {
+      return { ...data.columnStyles[index] };
+    };
+    watch(() => props.columns, () => {
+      setColumnStyles();
+    }, { immediate: true });
+    watch(() => props.tableRef, () => {
+      setColumnStyles();
+    }, { immediate: true });
+    watch(() => props.paginated, () => {
+      if (props.tableRef)
+        setColumnStyles();
+    }, { deep: true });
+    return {
+      ...toRefs(data),
+      toggleSelectAll,
+      isSortableColumn,
+      sort,
+      setInitialSort,
+      getColumnSort,
+      getColumnSortLong,
+      getHeaderClasses,
+      filterRows,
+      getWidthStyle,
+      setColumnStyles,
+      getColumnStyle,
+      wrapperStyles
+    };
   },
   components: {
-    'vgt-filter-row': VgtFilterRow,
-  },
-};
-
+    FilterRow
+  }
+});
 const _hoisted_1$2 = {
   key: 0,
   scope: "col",
@@ -3366,148 +3257,125 @@ const _hoisted_2$2 = {
 const _hoisted_3$2 = ["checked", ".indeterminate"];
 const _hoisted_4$2 = ["title", "aria-sort", "aria-controls"];
 const _hoisted_5$2 = ["onClick"];
-const _hoisted_6$2 = { class: "sr-only" };
-
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_vgt_filter_row = resolveComponent("vgt-filter-row");
-
-  return (openBlock(), createElementBlock("thead", null, [
+  const _component_filter_row = resolveComponent("filter-row");
+  return openBlock(), createElementBlock("thead", null, [
     createElementVNode("tr", null, [
-      ($props.lineNumbers)
-        ? (openBlock(), createElementBlock("th", _hoisted_1$2))
-        : createCommentVNode("v-if", true),
-      ($props.selectable)
-        ? (openBlock(), createElementBlock("th", _hoisted_2$2, [
-            createElementVNode("input", {
-              type: "checkbox",
-              checked: $props.allSelected,
-              ".indeterminate": $props.allSelectedIndeterminate,
-              onChange: _cache[0] || (_cache[0] = (...args) => ($options.toggleSelectAll && $options.toggleSelectAll(...args)))
-            }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_3$2)
-          ]))
-        : createCommentVNode("v-if", true),
-      (openBlock(true), createElementBlock(Fragment, null, renderList($props.columns, (column, index) => {
-        return (openBlock(), createElementBlock(Fragment, { key: index }, [
-          (!column.hidden)
-            ? (openBlock(), createElementBlock("th", {
-                key: 0,
-                scope: "col",
-                title: column.tooltip,
-                class: normalizeClass($options.getHeaderClasses(column, index)),
-                style: normalizeStyle($data.columnStyles[index]),
-                "aria-sort": $options.getColumnSortLong(column),
-                "aria-controls": `col-${index}`
-              }, [
-                renderSlot(_ctx.$slots, "table-column", { column: column }, () => [
-                  createTextVNode(toDisplayString(column.label), 1 /* TEXT */)
-                ]),
-                ($options.isSortableColumn(column))
-                  ? (openBlock(), createElementBlock("button", {
-                      key: 0,
-                      onClick: $event => ($options.sort($event, column))
-                    }, [
-                      createElementVNode("span", _hoisted_6$2, " Sort table by " + toDisplayString(column.label) + " in " + toDisplayString($options.getColumnSortLong(column)) + " order ", 1 /* TEXT */)
-                    ], 8 /* PROPS */, _hoisted_5$2))
-                  : createCommentVNode("v-if", true)
-              ], 14 /* CLASS, STYLE, PROPS */, _hoisted_4$2))
-            : createCommentVNode("v-if", true)
-        ], 64 /* STABLE_FRAGMENT */))
-      }), 128 /* KEYED_FRAGMENT */))
+      _ctx.lineNumbers ? (openBlock(), createElementBlock("th", _hoisted_1$2)) : createCommentVNode("", true),
+      _ctx.selectable ? (openBlock(), createElementBlock("th", _hoisted_2$2, [
+        createElementVNode("input", {
+          type: "checkbox",
+          checked: _ctx.allSelected,
+          ".indeterminate": _ctx.allSelectedIndeterminate,
+          onChange: _cache[0] || (_cache[0] = (...args) => _ctx.toggleSelectAll && _ctx.toggleSelectAll(...args))
+        }, null, 40, _hoisted_3$2)
+      ])) : createCommentVNode("", true),
+      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.columns, (column, index) => {
+        return openBlock(), createElementBlock(Fragment, { key: index }, [
+          !column.hidden ? (openBlock(), createElementBlock("th", {
+            key: 0,
+            scope: "col",
+            title: column.tooltip,
+            class: normalizeClass(_ctx.getHeaderClasses(column, index)),
+            style: normalizeStyle(_ctx.wrapperStyles(index)),
+            "aria-sort": _ctx.getColumnSortLong(column),
+            "aria-controls": `col-${index}`
+          }, [
+            renderSlot(_ctx.$slots, "table-column", { column }, () => [
+              createTextVNode(toDisplayString(column.label), 1)
+            ], true),
+            _ctx.isSortableColumn(column) ? (openBlock(), createElementBlock("button", {
+              key: 0,
+              onClick: ($event) => _ctx.sort($event, column)
+            }, null, 8, _hoisted_5$2)) : createCommentVNode("", true)
+          ], 14, _hoisted_4$2)) : createCommentVNode("", true)
+        ], 64);
+      }), 128))
     ]),
-    createVNode(_component_vgt_filter_row, {
+    createVNode(_component_filter_row, {
       ref: "filter-row",
-      onFilterChanged: $options.filterRows,
-      "global-search-enabled": $props.searchEnabled,
-      "line-numbers": $props.lineNumbers,
-      selectable: $props.selectable,
-      columns: $props.columns,
-      mode: $props.mode,
-      "typed-columns": $props.typedColumns
+      onFilterChanged: _ctx.filterRows,
+      "global-search-enabled": _ctx.searchEnabled,
+      "line-numbers": _ctx.lineNumbers,
+      selectable: _ctx.selectable,
+      columns: _ctx.columns,
+      mode: _ctx.mode,
+      "typed-columns": _ctx.typedColumns
     }, {
       "column-filter": withCtx((slotProps) => [
         renderSlot(_ctx.$slots, "column-filter", {
           column: slotProps.column,
           updateFilters: slotProps.updateFilters
-        })
+        }, void 0, true)
       ]),
-      _: 3 /* FORWARDED */
-    }, 8 /* PROPS */, ["onFilterChanged", "global-search-enabled", "line-numbers", "selectable", "columns", "mode", "typed-columns"])
-  ]))
+      _: 3
+    }, 8, ["onFilterChanged", "global-search-enabled", "line-numbers", "selectable", "columns", "mode", "typed-columns"])
+  ]);
 }
-var VgtTableHeader = /*#__PURE__*/_export_sfc(_sfc_main$2, [['render',_sfc_render$2]]);
+var VgtTableHeader = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-9a79082e"]]);
 
-const _sfc_main$1 = {
-  name: 'VgtHeaderRow',
+const _sfc_main$1 = defineComponent({
+  name: "HeaderRow",
   props: {
     headerRow: {
       type: Object,
+      required: true
     },
     columns: {
       type: Array,
+      required: true
     },
     lineNumbers: {
-      type: Boolean,
+      type: Boolean
     },
     selectable: {
-      type: Boolean,
+      type: Boolean
     },
     selectAllByGroup: {
       type: Boolean
     },
     collapsable: {
       type: [Boolean, Number],
-      default: false,
+      default: false
     },
     collectFormatted: {
       type: Function,
+      required: true
     },
     formattedRow: {
       type: Function,
+      required: true
     },
     getClasses: {
       type: Function,
+      required: true
     },
     fullColspan: {
-      type: Number,
+      type: Number
     },
     groupIndex: {
       type: Number
-    },
-  },
-  emits: [
-    'vgtExpand',
-    'select-group-change',
-  ],
-  data() {
-    return {
-    };
-  },
-  computed: {
-    allSelected() {
-      const { headerRow } = this;
-      return headerRow.children.filter((row) => row.vgtSelected).length === headerRow.children.length;
     }
   },
-  methods: {
-    columnCollapsable(currentIndex) {
-      if (this.collapsable === true) {
+  emits: ["vgtExpand", "select-group-change"],
+  setup(props, ctx) {
+    const allSelected = computed(() => props.headerRow.children.filter((row) => row.vgtSelected).length === props.headerRow.children.length);
+    const columnCollapsable = (currentIndex) => {
+      if (props.collapsable === true) {
         return currentIndex === 0;
       }
-      return currentIndex === this.collapsable;
-    },
-    toggleSelectGroup(event) {
-      this.$emit('select-group-change', {
-        groupIndex: this.groupIndex, checked: event.target.checked
-      });
-    }
-  },
-
-  mounted() {
-  },
-  components: {
-  },
-};
-
+      return currentIndex === props.collapsable;
+    };
+    const toggleSelectGroup = (event) => {
+      ctx.emit("select-group-change", { groupIndex: props.groupIndex, checked: event.target.checked });
+    };
+    return {
+      allSelected,
+      columnCollapsable,
+      toggleSelectGroup
+    };
+  }
+});
 const _hoisted_1$1 = ["colspan"];
 const _hoisted_2$1 = ["checked"];
 const _hoisted_3$1 = ["innerHTML"];
@@ -3524,105 +3392,83 @@ const _hoisted_7$1 = ["checked"];
 const _hoisted_8$1 = ["onClick"];
 const _hoisted_9$1 = { key: 0 };
 const _hoisted_10$1 = ["innerHTML"];
-
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return (openBlock(), createElementBlock("tr", null, [
-    ($props.headerRow.mode === 'span')
-      ? (openBlock(), createElementBlock("th", {
+  return openBlock(), createElementBlock("tr", null, [
+    _ctx.headerRow.mode === "span" ? (openBlock(), createElementBlock("th", {
+      key: 0,
+      class: "vgt-left-align vgt-row-header",
+      colspan: _ctx.fullColspan
+    }, [
+      _ctx.selectAllByGroup ? renderSlot(_ctx.$slots, "table-header-group-select", {
+        key: 0,
+        columns: _ctx.columns,
+        row: _ctx.headerRow
+      }, () => [
+        createElementVNode("input", {
+          type: "checkbox",
+          checked: _ctx.allSelected,
+          onChange: _cache[0] || (_cache[0] = ($event) => _ctx.toggleSelectGroup($event))
+        }, null, 40, _hoisted_2$1)
+      ]) : createCommentVNode("", true),
+      createElementVNode("span", {
+        onClick: _cache[1] || (_cache[1] = ($event) => _ctx.collapsable ? _ctx.$emit("vgtExpand", !_ctx.headerRow.vgtIsExpanded) : () => {
+        })
+      }, [
+        _ctx.collapsable ? (openBlock(), createElementBlock("span", {
           key: 0,
-          class: "vgt-left-align vgt-row-header",
-          colspan: $props.fullColspan
+          class: normalizeClass(["triangle", { "expand": _ctx.headerRow.vgtIsExpanded }])
+        }, null, 2)) : createCommentVNode("", true),
+        renderSlot(_ctx.$slots, "table-header-row", { row: _ctx.headerRow }, () => [
+          _ctx.headerRow.html ? (openBlock(), createElementBlock("span", {
+            key: 0,
+            innerHTML: _ctx.headerRow.label
+          }, null, 8, _hoisted_3$1)) : (openBlock(), createElementBlock("span", _hoisted_4$1, toDisplayString(_ctx.headerRow.label), 1))
+        ])
+      ])
+    ], 8, _hoisted_1$1)) : createCommentVNode("", true),
+    _ctx.headerRow.mode !== "span" && _ctx.lineNumbers ? (openBlock(), createElementBlock("th", _hoisted_5$1)) : createCommentVNode("", true),
+    _ctx.headerRow.mode !== "span" && _ctx.selectable ? (openBlock(), createElementBlock("th", _hoisted_6$1, [
+      _ctx.selectAllByGroup ? renderSlot(_ctx.$slots, "table-header-group-select", {
+        key: 0,
+        columns: _ctx.columns,
+        row: _ctx.headerRow
+      }, () => [
+        createElementVNode("input", {
+          type: "checkbox",
+          checked: _ctx.allSelected,
+          onChange: _cache[2] || (_cache[2] = ($event) => _ctx.toggleSelectGroup($event))
+        }, null, 40, _hoisted_7$1)
+      ]) : createCommentVNode("", true)
+    ])) : createCommentVNode("", true),
+    (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.columns, (column, i) => {
+      return openBlock(), createElementBlock(Fragment, { key: i }, [
+        _ctx.headerRow.mode !== "span" && !column.hidden ? (openBlock(), createElementBlock("th", {
+          key: 0,
+          class: normalizeClass(["vgt-row-header", _ctx.getClasses(i, "td")]),
+          onClick: ($event) => _ctx.columnCollapsable(i) ? _ctx.$emit("vgtExpand", !_ctx.headerRow.vgtIsExpanded) : () => {
+          }
         }, [
-          ($props.selectAllByGroup)
-            ? renderSlot(_ctx.$slots, "table-header-group-select", {
-                key: 0,
-                columns: $props.columns,
-                row: $props.headerRow
-              }, () => [
-                createElementVNode("input", {
-                  type: "checkbox",
-                  checked: $options.allSelected,
-                  onChange: _cache[0] || (_cache[0] = $event => ($options.toggleSelectGroup($event)))
-                }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_2$1)
-              ])
-            : createCommentVNode("v-if", true),
-          createElementVNode("span", {
-            onClick: _cache[1] || (_cache[1] = $event => ($props.collapsable ? _ctx.$emit('vgtExpand', !$props.headerRow.vgtIsExpanded) : () => {}))
-          }, [
-            ($props.collapsable)
-              ? (openBlock(), createElementBlock("span", {
-                  key: 0,
-                  class: normalizeClass(["triangle", { 'expand': $props.headerRow.vgtIsExpanded }])
-                }, null, 2 /* CLASS */))
-              : createCommentVNode("v-if", true),
-            renderSlot(_ctx.$slots, "table-header-row", { row: $props.headerRow }, () => [
-              ($props.headerRow.html)
-                ? (openBlock(), createElementBlock("span", {
-                    key: 0,
-                    innerHTML: $props.headerRow.label
-                  }, null, 8 /* PROPS */, _hoisted_3$1))
-                : (openBlock(), createElementBlock("span", _hoisted_4$1, toDisplayString($props.headerRow.label), 1 /* TEXT */))
-            ])
+          _ctx.columnCollapsable(i) ? (openBlock(), createElementBlock("span", {
+            key: 0,
+            class: normalizeClass(["triangle", { "expand": _ctx.headerRow.vgtIsExpanded }])
+          }, null, 2)) : createCommentVNode("", true),
+          renderSlot(_ctx.$slots, "table-header-row", {
+            row: _ctx.headerRow,
+            column,
+            formattedRow: _ctx.formattedRow(_ctx.headerRow, true)
+          }, () => [
+            !column.html ? (openBlock(), createElementBlock("span", _hoisted_9$1, toDisplayString(_ctx.collectFormatted(_ctx.headerRow, column, true)), 1)) : createCommentVNode("", true),
+            column.html ? (openBlock(), createElementBlock("span", {
+              key: 1,
+              innerHTML: _ctx.collectFormatted(_ctx.headerRow, column, true)
+            }, null, 8, _hoisted_10$1)) : createCommentVNode("", true)
           ])
-        ], 8 /* PROPS */, _hoisted_1$1))
-      : createCommentVNode("v-if", true),
-    createCommentVNode(" if the mode is not span, we display every column "),
-    ($props.headerRow.mode !== 'span' && $props.lineNumbers)
-      ? (openBlock(), createElementBlock("th", _hoisted_5$1))
-      : createCommentVNode("v-if", true),
-    ($props.headerRow.mode !== 'span' && $props.selectable)
-      ? (openBlock(), createElementBlock("th", _hoisted_6$1, [
-          ($props.selectAllByGroup)
-            ? renderSlot(_ctx.$slots, "table-header-group-select", {
-                key: 0,
-                columns: $props.columns,
-                row: $props.headerRow
-              }, () => [
-                createElementVNode("input", {
-                  type: "checkbox",
-                  checked: $options.allSelected,
-                  onChange: _cache[2] || (_cache[2] = $event => ($options.toggleSelectGroup($event)))
-                }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_7$1)
-              ])
-            : createCommentVNode("v-if", true)
-        ]))
-      : createCommentVNode("v-if", true),
-    (openBlock(true), createElementBlock(Fragment, null, renderList($props.columns, (column, i) => {
-      return (openBlock(), createElementBlock(Fragment, { key: i }, [
-        ($props.headerRow.mode !== 'span' && !column.hidden)
-          ? (openBlock(), createElementBlock("th", {
-              key: 0,
-              class: normalizeClass(["vgt-row-header", $props.getClasses(i, 'td')]),
-              onClick: $event => ($options.columnCollapsable(i) ? _ctx.$emit('vgtExpand', !$props.headerRow.vgtIsExpanded) : () => {})
-            }, [
-              ($options.columnCollapsable(i))
-                ? (openBlock(), createElementBlock("span", {
-                    key: 0,
-                    class: normalizeClass(["triangle", { 'expand': $props.headerRow.vgtIsExpanded }])
-                  }, null, 2 /* CLASS */))
-                : createCommentVNode("v-if", true),
-              renderSlot(_ctx.$slots, "table-header-row", {
-                row: $props.headerRow,
-                column: column,
-                formattedRow: $props.formattedRow($props.headerRow, true)
-              }, () => [
-                (!column.html)
-                  ? (openBlock(), createElementBlock("span", _hoisted_9$1, toDisplayString($props.collectFormatted($props.headerRow, column, true)), 1 /* TEXT */))
-                  : createCommentVNode("v-if", true),
-                (column.html)
-                  ? (openBlock(), createElementBlock("span", {
-                      key: 1,
-                      innerHTML: $props.collectFormatted($props.headerRow, column, true)
-                    }, null, 8 /* PROPS */, _hoisted_10$1))
-                  : createCommentVNode("v-if", true)
-              ])
-            ], 10 /* CLASS, PROPS */, _hoisted_8$1))
-          : createCommentVNode("v-if", true)
-      ], 64 /* STABLE_FRAGMENT */))
-    }), 128 /* KEYED_FRAGMENT */))
-  ]))
+        ], 10, _hoisted_8$1)) : createCommentVNode("", true)
+      ], 64);
+    }), 128))
+  ]);
 }
-var VgtHeaderRow = /*#__PURE__*/_export_sfc(_sfc_main$1, [['render',_sfc_render$1]]);
+var VgtHeaderRow = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 
 function toInteger(dirtyNumber) {
   if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
@@ -4072,7 +3918,7 @@ function buildLocalizeFn(args) {
       valuesArray = args.values[_width] || args.values[_defaultWidth];
     }
 
-    var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex; // @ts-ignore: For some reason TypeScript just don't want to match it, no matter how hard we try. I challange you to try to remove it!
+    var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex; // @ts-ignore: For some reason TypeScript just don't want to match it, no matter how hard we try. I challenge you to try to remove it!
 
     return valuesArray[index];
   };
@@ -4442,101 +4288,6 @@ function subMilliseconds(dirtyDate, dirtyAmount) {
   return addMilliseconds(dirtyDate, -amount);
 }
 
-function addLeadingZeros(number, targetLength) {
-  var sign = number < 0 ? '-' : '';
-  var output = Math.abs(number).toString();
-
-  while (output.length < targetLength) {
-    output = '0' + output;
-  }
-
-  return sign + output;
-}
-
-/*
- * |     | Unit                           |     | Unit                           |
- * |-----|--------------------------------|-----|--------------------------------|
- * |  a  | AM, PM                         |  A* |                                |
- * |  d  | Day of month                   |  D  |                                |
- * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
- * |  m  | Minute                         |  M  | Month                          |
- * |  s  | Second                         |  S  | Fraction of second             |
- * |  y  | Year (abs)                     |  Y  |                                |
- *
- * Letters marked by * are not implemented but reserved by Unicode standard.
- */
-
-var formatters$2 = {
-  // Year
-  y: function (date, token) {
-    // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
-    // | Year     |     y | yy |   yyy |  yyyy | yyyyy |
-    // |----------|-------|----|-------|-------|-------|
-    // | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
-    // | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
-    // | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
-    // | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
-    // | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
-    var signedYear = date.getUTCFullYear(); // Returns 1 for 1 BC (which is year 0 in JavaScript)
-
-    var year = signedYear > 0 ? signedYear : 1 - signedYear;
-    return addLeadingZeros(token === 'yy' ? year % 100 : year, token.length);
-  },
-  // Month
-  M: function (date, token) {
-    var month = date.getUTCMonth();
-    return token === 'M' ? String(month + 1) : addLeadingZeros(month + 1, 2);
-  },
-  // Day of the month
-  d: function (date, token) {
-    return addLeadingZeros(date.getUTCDate(), token.length);
-  },
-  // AM or PM
-  a: function (date, token) {
-    var dayPeriodEnumValue = date.getUTCHours() / 12 >= 1 ? 'pm' : 'am';
-
-    switch (token) {
-      case 'a':
-      case 'aa':
-        return dayPeriodEnumValue.toUpperCase();
-
-      case 'aaa':
-        return dayPeriodEnumValue;
-
-      case 'aaaaa':
-        return dayPeriodEnumValue[0];
-
-      case 'aaaa':
-      default:
-        return dayPeriodEnumValue === 'am' ? 'a.m.' : 'p.m.';
-    }
-  },
-  // Hour [1-12]
-  h: function (date, token) {
-    return addLeadingZeros(date.getUTCHours() % 12 || 12, token.length);
-  },
-  // Hour [0-23]
-  H: function (date, token) {
-    return addLeadingZeros(date.getUTCHours(), token.length);
-  },
-  // Minute
-  m: function (date, token) {
-    return addLeadingZeros(date.getUTCMinutes(), token.length);
-  },
-  // Second
-  s: function (date, token) {
-    return addLeadingZeros(date.getUTCSeconds(), token.length);
-  },
-  // Fraction of second
-  S: function (date, token) {
-    var numberOfDigits = token.length;
-    var milliseconds = date.getUTCMilliseconds();
-    var fractionalSeconds = Math.floor(milliseconds * Math.pow(10, numberOfDigits - 3));
-    return addLeadingZeros(fractionalSeconds, token.length);
-  }
-};
-var formatters$3 = formatters$2;
-
 var MILLISECONDS_IN_DAY = 86400000; // This function will be a part of public API when UTC function will be implemented.
 // See issue: https://github.com/date-fns/date-fns/issues/376
 
@@ -4639,7 +4390,7 @@ function startOfUTCWeek(dirtyDate, dirtyOptions) {
 
 function getUTCWeekYear(dirtyDate, dirtyOptions) {
   requiredArgs(1, arguments);
-  var date = toDate(dirtyDate, dirtyOptions);
+  var date = toDate(dirtyDate);
   var year = date.getUTCFullYear();
   var options = dirtyOptions || {};
   var locale = options.locale;
@@ -4698,6 +4449,101 @@ function getUTCWeek(dirtyDate, options) {
 
   return Math.round(diff / MILLISECONDS_IN_WEEK) + 1;
 }
+
+function addLeadingZeros(number, targetLength) {
+  var sign = number < 0 ? '-' : '';
+  var output = Math.abs(number).toString();
+
+  while (output.length < targetLength) {
+    output = '0' + output;
+  }
+
+  return sign + output;
+}
+
+/*
+ * |     | Unit                           |     | Unit                           |
+ * |-----|--------------------------------|-----|--------------------------------|
+ * |  a  | AM, PM                         |  A* |                                |
+ * |  d  | Day of month                   |  D  |                                |
+ * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
+ * |  m  | Minute                         |  M  | Month                          |
+ * |  s  | Second                         |  S  | Fraction of second             |
+ * |  y  | Year (abs)                     |  Y  |                                |
+ *
+ * Letters marked by * are not implemented but reserved by Unicode standard.
+ */
+
+var formatters$2 = {
+  // Year
+  y: function (date, token) {
+    // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
+    // | Year     |     y | yy |   yyy |  yyyy | yyyyy |
+    // |----------|-------|----|-------|-------|-------|
+    // | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
+    // | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
+    // | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
+    // | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
+    // | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
+    var signedYear = date.getUTCFullYear(); // Returns 1 for 1 BC (which is year 0 in JavaScript)
+
+    var year = signedYear > 0 ? signedYear : 1 - signedYear;
+    return addLeadingZeros(token === 'yy' ? year % 100 : year, token.length);
+  },
+  // Month
+  M: function (date, token) {
+    var month = date.getUTCMonth();
+    return token === 'M' ? String(month + 1) : addLeadingZeros(month + 1, 2);
+  },
+  // Day of the month
+  d: function (date, token) {
+    return addLeadingZeros(date.getUTCDate(), token.length);
+  },
+  // AM or PM
+  a: function (date, token) {
+    var dayPeriodEnumValue = date.getUTCHours() / 12 >= 1 ? 'pm' : 'am';
+
+    switch (token) {
+      case 'a':
+      case 'aa':
+        return dayPeriodEnumValue.toUpperCase();
+
+      case 'aaa':
+        return dayPeriodEnumValue;
+
+      case 'aaaaa':
+        return dayPeriodEnumValue[0];
+
+      case 'aaaa':
+      default:
+        return dayPeriodEnumValue === 'am' ? 'a.m.' : 'p.m.';
+    }
+  },
+  // Hour [1-12]
+  h: function (date, token) {
+    return addLeadingZeros(date.getUTCHours() % 12 || 12, token.length);
+  },
+  // Hour [0-23]
+  H: function (date, token) {
+    return addLeadingZeros(date.getUTCHours(), token.length);
+  },
+  // Minute
+  m: function (date, token) {
+    return addLeadingZeros(date.getUTCMinutes(), token.length);
+  },
+  // Second
+  s: function (date, token) {
+    return addLeadingZeros(date.getUTCSeconds(), token.length);
+  },
+  // Fraction of second
+  S: function (date, token) {
+    var numberOfDigits = token.length;
+    var milliseconds = date.getUTCMilliseconds();
+    var fractionalSeconds = Math.floor(milliseconds * Math.pow(10, numberOfDigits - 3));
+    return addLeadingZeros(fractionalSeconds, token.length);
+  }
+};
+var formatters$3 = formatters$2;
 
 var dayPeriodEnum = {
   am: 'am',
@@ -5610,7 +5456,7 @@ function timeLongFormatter(pattern, formatLong) {
 }
 
 function dateTimeLongFormatter(pattern, formatLong) {
-  var matchResult = pattern.match(/(P+)(p+)?/);
+  var matchResult = pattern.match(/(P+)(p+)?/) || [];
   var datePattern = matchResult[1];
   var timePattern = matchResult[2];
 
@@ -5941,7 +5787,7 @@ var unescapedLatinCharacterRegExp$1 = /[a-zA-Z]/;
  * 8. `YY` and `YYYY` tokens represent week-numbering years but they are often confused with years.
  *    You should enable `options.useAdditionalWeekYearTokens` to use them. See: https://git.io/fxCyr
  *
- * 9. `D` and `DD` tokens represent days of the year but they are ofthen confused with days of the month.
+ * 9. `D` and `DD` tokens represent days of the year but they are often confused with days of the month.
  *    You should enable `options.useAdditionalDayOfYearTokens` to use them. See: https://git.io/fxCyr
  *
  * ### v2.0.0 breaking changes:
@@ -7313,7 +7159,7 @@ var parsers = {
       date.setUTCHours(dayPeriodEnumToHours(value), 0, 0, 0);
       return date;
     },
-    incompatibleTokens: ['b', 'B', 'H', 'K', 'k', 't', 'T']
+    incompatibleTokens: ['b', 'B', 'H', 'k', 't', 'T']
   },
   // AM, PM, midnight
   b: {
@@ -7355,7 +7201,7 @@ var parsers = {
       date.setUTCHours(dayPeriodEnumToHours(value), 0, 0, 0);
       return date;
     },
-    incompatibleTokens: ['a', 'B', 'H', 'K', 'k', 't', 'T']
+    incompatibleTokens: ['a', 'B', 'H', 'k', 't', 'T']
   },
   // in the morning, in the afternoon, in the evening, at night
   B: {
@@ -7491,7 +7337,7 @@ var parsers = {
 
       return date;
     },
-    incompatibleTokens: ['a', 'b', 'h', 'H', 'k', 't', 'T']
+    incompatibleTokens: ['h', 'H', 'k', 't', 'T']
   },
   // Hour [1-24]
   k: {
@@ -7849,7 +7695,7 @@ var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
  * |                                 |     | tt      | ...                               | 2     |
  * | Fraction of second              |  30 | S       | 0, 1, ..., 9                      |       |
  * |                                 |     | SS      | 00, 01, ..., 99                   |       |
- * |                                 |     | SSS     | 000, 0001, ..., 999               |       |
+ * |                                 |     | SSS     | 000, 001, ..., 999                |       |
  * |                                 |     | SSSS    | ...                               | 2     |
  * | Milliseconds timestamp          |  20 | T       | 512969520900                      |       |
  * |                                 |     | TT      | ...                               | 2     |
@@ -8221,181 +8067,170 @@ function cleanEscapedString(input) {
   return input.match(escapedStringRegExp)[1].replace(doubleQuoteRegExp, "'");
 }
 
-const date = Object.assign({}, defaultType);
-
-date.isRight = true;
-
-/**
- * Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the second or 0 if dates are equal.
- * @param {*} x Date 1
- * @param {*} y Date 2
- * @param {Object} column Additional parameters (e.g. dateInputFormat, dateOutputFormat)
- * @returns 
- */
-date.compare = function (x, y, column) {
+const compare = (x, y, column) => {
   function cook(d) {
     if (column && column.dateInputFormat) {
       return parse(`${d}`, `${column.dateInputFormat}`, new Date());
-    } else if (typeof d === 'string') {
+    }
+    if (typeof d === "string") {
       try {
         return Date.parse(d);
-      } catch(err) {
+      } catch (err) {
         return d;
       }
     }
     return d;
   }
-  x = cook(x);
-  y = cook(y);
-  if (!isValid(x)) {
+  const a = cook(x);
+  const b = cook(y);
+  if (!isValid(a)) {
     return -1;
   }
-  if (!isValid(y)) {
+  if (!isValid(b)) {
     return 1;
   }
-  return compareAsc(x, y);
+  return compareAsc(a, b);
 };
-
-date.format = function (v, column) {
-  if (v === undefined || v === null) return '';
-  // convert to date
-  const date = parse(v, column.dateInputFormat, new Date());
-  if (isValid(date)) {
-    return format(date, column.dateOutputFormat);
+const dateFormat = (v, column) => {
+  if (v === void 0 || v === null)
+    return "";
+  const dt = parse(v, column.dateInputFormat, new Date());
+  if (isValid(dt)) {
+    return format(dt, column.dateOutputFormat);
   }
   console.error(`Not a valid date: "${v}"`);
   return null;
 };
-
-var date$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': date
-});
-
-const number = Object.assign({}, defaultType);
-
-number.isRight = true;
-
-number.filterPredicate = function (rowval, filter) {
-  return number.compare(rowval, filter) === 0;
+const date = {
+  ...defaultType,
+  isRight: true,
+  compare,
+  format: dateFormat
 };
 
+var date$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+	__proto__: null,
+	'default': date
+}, Symbol.toStringTag, { value: 'Module' }));
 
-number.compare = function (x, y) {
+const number = { ...defaultType, isRight: true };
+number.filterPredicate = (rowval, filter) => number.compare(rowval, filter) === 0;
+number.compare = (x, y) => {
   function cook(d) {
-    // if d is null or undefined we give it the smallest
-    // possible value
-    if (d === undefined || d === null) return -Infinity;
-    return d.indexOf('.') >= 0 ? parseFloat(d) : parseInt(d, 10);
+    if (d === void 0 || d === null)
+      return -Infinity;
+    return d.indexOf(".") >= 0 ? parseFloat(d) : parseInt(d, 10);
   }
-
-  x = typeof x === 'number' ? x : cook(x);
-  y = typeof y === 'number' ? y : cook(y);
-  if (x < y) return -1;
-  if (x > y) return 1;
+  const a = typeof x === "number" ? x : cook(x);
+  const b = typeof y === "number" ? y : cook(y);
+  if (a < b)
+    return -1;
+  if (a > b)
+    return 1;
   return 0;
 };
 
-var number$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': number
-});
+var number$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+	__proto__: null,
+	'default': number
+}, Symbol.toStringTag, { value: 'Module' }));
 
-const decimal = Object.assign({}, number);
-
-decimal.format = function (v) {
-  if (v === undefined || v === null) return '';
-  return parseFloat(Math.round(v * 100) / 100).toFixed(2);
+const decimal = { ...number };
+decimal.format = (v) => {
+  if (v === void 0 || v === null)
+    return "";
+  const z = Math.round(v * 100) / 100;
+  return z.toFixed(2);
 };
 
-var decimal$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': decimal
-});
+var decimal$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+	__proto__: null,
+	'default': decimal
+}, Symbol.toStringTag, { value: 'Module' }));
 
-const percentage = Object.assign({}, number);
-
-percentage.format = function (v) {
-  if (v === undefined || v === null) return '';
-  return `${parseFloat(v * 100).toFixed(2)}%`;
+const percentage = { ...number };
+percentage.format = (v) => {
+  if (v === void 0 || v === null)
+    return "";
+  const z = v * 100;
+  return `${z.toFixed(2)}%`;
 };
 
-var percentage$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': percentage
-});
+var percentage$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+	__proto__: null,
+	'default': percentage
+}, Symbol.toStringTag, { value: 'Module' }));
 
-const boolean = Object.assign({}, defaultType);
-
-boolean.isRight = true;
-
-boolean.filterPredicate = function (rowval, filter) {
-  return boolean.compare(rowval, filter) === 0;
-};
-
-
-boolean.compare = function (x, y) {
+const boolean = { ...defaultType, isRight: true };
+boolean.filterPredicate = (rowval, filter) => boolean.compare(rowval, filter) === 0;
+boolean.compare = (x, y) => {
   function cook(d) {
-    if (typeof d === 'boolean') return d ? 1 : 0;
-    if (typeof d === 'string') return d === 'true' ? 1 : 0;
+    if (typeof d === "boolean")
+      return d ? 1 : 0;
+    if (typeof d === "string")
+      return d === "true" ? 1 : 0;
     return -Infinity;
   }
-
-  x = cook(x);
-  y = cook(y);
-  if (x < y) return -1;
-  if (x > y) return 1;
+  const a = cook(x);
+  const b = cook(y);
+  if (a < b)
+    return -1;
+  if (a > b)
+    return 1;
   return 0;
 };
 
-var boolean$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': boolean
-});
+var boolean$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+	__proto__: null,
+	'default': boolean
+}, Symbol.toStringTag, { value: 'Module' }));
 
-var index$1 = {
+var index = {
   date: date$1,
   decimal: decimal$1,
   number: number$1,
   percentage: percentage$1,
-  boolean: boolean$1,
+  boolean: boolean$1
 };
 
+var DataTable_vue_vue_type_style_index_0_lang = '';
+
 const dataTypes = {};
-const coreDataTypes = index$1;
+const coreDataTypes = index;
 Object.keys(coreDataTypes).forEach((key) => {
   const compName = key.replace(/^\.\//, '').replace(/\.js/, '');
   dataTypes[compName] = coreDataTypes[key].default;
 });
-
 const _sfc_main = {
-  name: 'vue-good-table',
+  name: 'DataTable',
   props: {
+    canExport: {
+      type: Boolean,
+      default: false,
+    },
     isLoading: { default: null, type: Boolean },
     maxHeight: { default: null, type: String },
-    fixedHeader: Boolean ,
+    fixedHeader: Boolean,
     theme: { default: '' },
     mode: { default: 'local' }, // could be remote
     totalRows: {}, // required if mode = 'remote'
-    styleClass: { default: 'vgt-table bordered' },
+    styleClass: { default: 'vgt-table striped' },
     columns: {},
     rows: {},
     lineNumbers: Boolean,
-    responsive: { default: true , type: Boolean },
+    responsive: { default: true, type: Boolean },
     rtl: Boolean,
     rowStyleClass: { default: null, type: [Function, String] },
     compactMode: Boolean,
-
     groupOptions: {
       default() {
         return {
           enabled: false,
           collapsable: false,
-          rowKey: null
+          rowKey: null,
         };
       },
     },
-
     selectOptions: {
       default() {
         return {
@@ -8408,7 +8243,6 @@ const _sfc_main = {
         };
       },
     },
-
     // sort
     sortOptions: {
       default() {
@@ -8419,7 +8253,6 @@ const _sfc_main = {
         };
       },
     },
-
     // pagination
     paginationOptions: {
       default() {
@@ -8429,14 +8262,12 @@ const _sfc_main = {
           perPage: 10,
           perPageDropdown: null,
           perPageDropdownEnabled: true,
-          position: 'bottom',
           dropdownAllowAll: true,
           mode: 'records', // or pages
           infoFn: null,
         };
       },
     },
-
     searchOptions: {
       default() {
         return {
@@ -8449,13 +8280,9 @@ const _sfc_main = {
       },
     },
   },
-
-
-
   data: () => ({
     // loading state for remote mode
     tableLoading: false,
-
     // text options
     nextText: 'Next',
     prevText: 'Previous',
@@ -8463,7 +8290,6 @@ const _sfc_main = {
     ofText: 'of',
     allText: 'All',
     pageText: 'page',
-
     // internal select options
     selectable: false,
     selectOnCheckboxOnly: false,
@@ -8472,16 +8298,13 @@ const _sfc_main = {
     selectionInfoClass: '',
     selectionText: 'rows selected',
     clearSelectionText: 'clear',
-
     // keys for rows that are currently expanded
     maintainExpanded: true,
     expandedRowKeys: new Set(),
-
     // internal sort options
     sortable: true,
     defaultSortBy: null,
     multipleColumnSort: true,
-
     // internal search options
     searchEnabled: false,
     searchTrigger: null,
@@ -8489,7 +8312,6 @@ const _sfc_main = {
     searchFn: null,
     searchPlaceholder: 'Search Table',
     searchSkipDiacritics: false,
-
     // internal pagination options
     perPage: null,
     paginate: false,
@@ -8499,7 +8321,6 @@ const _sfc_main = {
     paginateDropdownAllowAll: true,
     paginationMode: 'records',
     paginationInfoFn: null,
-
     currentPage: 1,
     currentPerPage: 10,
     sorts: [],
@@ -8510,7 +8331,6 @@ const _sfc_main = {
     sortChanged: false,
     dataTypes: dataTypes || {},
   }),
-
   emits: [
     'select-all',
     'selected-rows-change',
@@ -8527,7 +8347,6 @@ const _sfc_main = {
     'row-mouseleave',
     'column-filter',
   ],
-
   watch: {
     rows: {
       handler() {
@@ -8537,7 +8356,6 @@ const _sfc_main = {
       deep: true,
       immediate: true,
     },
-
     selectOptions: {
       handler() {
         this.initializeSelect();
@@ -8545,7 +8363,6 @@ const _sfc_main = {
       deep: true,
       immediate: true,
     },
-
     paginationOptions: {
       handler(newValue, oldValue) {
         if (!isEqual(newValue, oldValue)) {
@@ -8555,12 +8372,11 @@ const _sfc_main = {
       deep: true,
       immediate: true,
     },
-
     searchOptions: {
       handler() {
         if (
-          this.searchOptions.externalQuery !== undefined &&
-          this.searchOptions.externalQuery !== this.searchTerm
+          this.searchOptions.externalQuery !== undefined
+          && this.searchOptions.externalQuery !== this.searchTerm
         ) {
           //* we need to set searchTerm to externalQuery first.
           this.externalSearchQuery = this.searchOptions.externalQuery;
@@ -8571,7 +8387,6 @@ const _sfc_main = {
       deep: true,
       immediate: true,
     },
-
     sortOptions: {
       handler(newValue, oldValue) {
         if (!isEqual(newValue, oldValue)) {
@@ -8580,22 +8395,16 @@ const _sfc_main = {
       },
       deep: true,
     },
-
     selectedRows(newValue, oldValue) {
       if (!isEqual(newValue, oldValue)) {
-        this.$emit('selected-rows-change', {
-          selectedRows: this.selectedRows,
-        });
+        this.$emit('selected-rows-change', this.selectedRows);
       }
     },
   },
-
   computed: {
     tableStyles() {
-      if (this.compactMode)
-        return this.tableStyleClasses + 'vgt-compact'
-      else
-        return this.tableStyleClasses
+      if (this.compactMode) return `${this.tableStyleClasses}vgt-compact`;
+      return this.tableStyleClasses;
     },
     hasFooterSlot() {
       return !!this.$slots['table-actions-bottom'];
@@ -8606,58 +8415,47 @@ const _sfc_main = {
         maxHeight: this.maxHeight ? this.maxHeight : 'auto',
       };
     },
-
     rowKeyField() {
       return this.groupOptions.rowKey || 'vgt_header_id';
     },
-
     hasHeaderRowTemplate() {
       return !!this.$slots['table-header-row'];
     },
-
     showEmptySlot() {
       if (!this.paginated.length) return true;
-
       if (
-        this.paginated[0].label === 'no groups' &&
-        !this.paginated[0].children.length
+        this.paginated[0].label === 'no groups'
+        && !this.paginated[0].children.length
       ) {
         return true;
       }
-
       return false;
     },
-
     allSelected() {
       return (
-        this.selectedRowCount > 0 &&
-        ((this.selectAllByPage &&
-          this.selectedPageRowsCount === this.totalPageRowCount) ||
-          (!this.selectAllByPage &&
-            this.selectedRowCount === this.totalRowCount))
+        this.selectedRowCount > 0
+        && ((this.selectAllByPage
+          && this.selectedPageRowsCount === this.totalPageRowCount)
+          || (!this.selectAllByPage
+            && this.selectedRowCount === this.totalRowCount))
       );
     },
-
     allSelectedIndeterminate() {
       return (
-        !this.allSelected &&
-        ((this.selectAllByPage && this.selectedPageRowsCount > 0) ||
-          (!this.selectAllByPage && this.selectedRowCount > 0))
+        !this.allSelected
+        && ((this.selectAllByPage && this.selectedPageRowsCount > 0)
+          || (!this.selectAllByPage && this.selectedRowCount > 0))
       );
     },
-
     selectionInfo() {
       return `${this.selectedRowCount} ${this.selectionText}`;
     },
-
     selectedRowCount() {
       return this.selectedRows.length;
     },
-
     selectedPageRowsCount() {
       return this.selectedPageRows.length;
     },
-
     selectedPageRows() {
       const selectedRows = [];
       this.paginated.forEach((headerRow) => {
@@ -8669,7 +8467,6 @@ const _sfc_main = {
       });
       return selectedRows;
     },
-
     selectedRows() {
       const selectedRows = [];
       this.processedRows.forEach((headerRow) => {
@@ -8681,7 +8478,6 @@ const _sfc_main = {
       });
       return selectedRows.sort((r1, r2) => r1.originalIndex - r2.originalIndex);
     },
-
     fullColspan() {
       let fullColspan = 0;
       for (let i = 0; i < this.columns.length; i += 1) {
@@ -8689,46 +8485,45 @@ const _sfc_main = {
           fullColspan += 1;
         }
       }
-      if (this.lineNumbers) fullColspan++;
-      if (this.selectable) fullColspan++;
+      if (this.lineNumbers) fullColspan += 1;
+      if (this.selectable) fullColspan += 1;
       return fullColspan;
     },
     groupHeaderOnTop() {
       if (
-        this.groupOptions &&
-        this.groupOptions.enabled &&
-        this.groupOptions.headerPosition &&
-        this.groupOptions.headerPosition === 'bottom'
+        this.groupOptions
+        && this.groupOptions.enabled
+        && this.groupOptions.headerPosition
+        && this.groupOptions.headerPosition === 'bottom'
       ) {
         return false;
       }
       if (this.groupOptions && this.groupOptions.enabled) return true;
-
       // will only get here if groupOptions is false
       return false;
     },
     groupHeaderOnBottom() {
       if (
-        this.groupOptions &&
-        this.groupOptions.enabled &&
-        this.groupOptions.headerPosition &&
-        this.groupOptions.headerPosition === 'bottom'
+        this.groupOptions
+        && this.groupOptions.enabled
+        && this.groupOptions.headerPosition
+        && this.groupOptions.headerPosition === 'bottom'
       ) {
         return true;
       }
       return false;
     },
     totalRowCount() {
-      const total = this.processedRows.reduce((total, headerRow) => {
+      const total = this.processedRows.reduce((tot, headerRow) => {
         const childrenCount = headerRow.children ? headerRow.children.length : 0;
-        return total + childrenCount;
+        return tot + childrenCount;
       }, 0);
       return total;
     },
     totalPageRowCount() {
-      const total = this.paginated.reduce((total, headerRow) => {
+      const total = this.paginated.reduce((tot, headerRow) => {
         const childrenCount = headerRow.children ? headerRow.children.length : 0;
-        return total + childrenCount;
+        return tot + childrenCount;
       }, 0);
       return total;
     },
@@ -8743,35 +8538,29 @@ const _sfc_main = {
       classes += ` ${this.theme}`;
       return classes;
     },
-
     searchTerm() {
       return this.externalSearchQuery != null
         ? this.externalSearchQuery
         : this.globalSearchTerm;
     },
-
     //
     globalSearchAllowed() {
       if (
-        this.searchEnabled &&
-        !!this.globalSearchTerm &&
-        this.searchTrigger !== 'enter'
+        this.searchEnabled
+        && !!this.globalSearchTerm
+        && this.searchTrigger !== 'enter'
       ) {
         return true;
       }
-
       if (this.externalSearchQuery != null && this.searchTrigger !== 'enter') {
         return true;
       }
-
       if (this.forceSearch) {
         this.forceSearch = false;
         return true;
       }
-
       return false;
     },
-
     // this is done everytime sortColumn
     // or sort type changes
     //----------------------------------------
@@ -8781,7 +8570,6 @@ const _sfc_main = {
       if (this.mode === 'remote') {
         return computedRows;
       }
-
       // take care of the global filter here also
       if (this.globalSearchAllowed) {
         // here also we need to de-construct and then
@@ -8804,7 +8592,7 @@ const _sfc_main = {
                   row,
                   col,
                   this.collectFormatted(row, col),
-                  this.searchTerm
+                  this.searchTerm,
                 );
                 if (foundMatch) {
                   filteredRows.push(row);
@@ -8815,7 +8603,7 @@ const _sfc_main = {
                 const matched = defaultType.filterPredicate(
                   this.collectFormatted(row, col),
                   this.searchTerm,
-                  this.searchSkipDiacritics
+                  this.searchSkipDiacritics,
                 );
                 if (matched) {
                   filteredRows.push(row);
@@ -8825,13 +8613,11 @@ const _sfc_main = {
             }
           }
         });
-
         // this is where we emit on search
         this.$emit('search', {
           searchTerm: this.searchTerm,
           rowCount: filteredRows.length,
         });
-
         // here we need to reconstruct the nested structure
         // of rows
         computedRows = [];
@@ -8853,7 +8639,6 @@ const _sfc_main = {
             let sortValue;
             for (let i = 0; i < this.sorts.length; i += 1) {
               const srt = this.sorts[i];
-
               if (srt.type === SORT_TYPES.None) {
                 //* if no sort, we need to use the original index to sort.
                 sortValue = sortValue || (xRow.originalIndex - yRow.originalIndex);
@@ -8861,20 +8646,18 @@ const _sfc_main = {
                 const column = this.getColumnForField(srt.field);
                 const xvalue = this.collect(xRow, srt.field);
                 const yvalue = this.collect(yRow, srt.field);
-  
+
                 //* if a custom sort function has been provided we use that
                 const { sortFn } = column;
                 if (sortFn && typeof sortFn === 'function') {
-                  sortValue =
-                    sortValue ||
-                    sortFn(xvalue, yvalue, column, xRow, yRow) *
-                      (srt.type === SORT_TYPES.Descending ? -1 : 1);
+                  sortValue = sortValue
+                    || sortFn(xvalue, yvalue, column, xRow, yRow)
+                      * (srt.type === SORT_TYPES.Descending ? -1 : 1);
                 } else {
                   //* else we use our own sort
-                  sortValue =
-                    sortValue ||
-                    column.typeDef.compare(xvalue, yvalue, column) *
-                      (srt.type === SORT_TYPES.Descending ? -1 : 1);
+                  sortValue = sortValue
+                    || column.typeDef.compare(xvalue, yvalue, column)
+                      * (srt.type === SORT_TYPES.Descending ? -1 : 1);
                 }
               }
             }
@@ -8882,23 +8665,18 @@ const _sfc_main = {
           });
         });
       }
-
       // if the filtering is event based, we need to maintain filter
       // rows
       if (this.searchTrigger === 'enter') {
         this.filteredRows = computedRows;
       }
-
       return computedRows;
     },
-
     paginated() {
       if (!this.processedRows.length) return [];
-
       if (this.mode === 'remote') {
         return this.processedRows;
       }
-
       //* flatten the rows for paging.
       let paginatedRows = [];
       this.processedRows.forEach((childRows) => {
@@ -8908,10 +8686,8 @@ const _sfc_main = {
         }
         paginatedRows.push(...childRows.children);
       });
-
       if (this.paginate) {
         let pageStart = (this.currentPage - 1) * this.currentPerPage;
-
         // in case of filtering we might be on a page that is
         // not relevant anymore
         // also, if setting to all, current page will not be valid
@@ -8919,15 +8695,12 @@ const _sfc_main = {
           this.currentPage = 1;
           pageStart = 0;
         }
-
         // calculate page end now
         let pageEnd = paginatedRows.length + 1;
-
         // if the setting is set to 'all'
         if (this.currentPerPage !== -1) {
           pageEnd = this.currentPage * this.currentPerPage;
         }
-
         paginatedRows = paginatedRows.slice(pageStart, pageEnd);
       }
       // reconstruct paginated rows here
@@ -8941,9 +8714,9 @@ const _sfc_main = {
           reconstructedRows.push(newHeaderRow);
         } else {
           //* child row
-          let hRow = reconstructedRows.find(r => r.vgt_header_id === flatRow.vgt_id);
+          let hRow = reconstructedRows.find((r) => r.vgt_header_id === flatRow.vgt_id);
           if (!hRow) {
-            hRow = this.processedRows.find(r => r.vgt_header_id === flatRow.vgt_id);
+            hRow = this.processedRows.find((r) => r.vgt_header_id === flatRow.vgt_id);
             if (hRow) {
               hRow = JSON.parse(JSON.stringify(hRow));
               hRow.children = [];
@@ -8955,7 +8728,6 @@ const _sfc_main = {
       });
       return reconstructedRows;
     },
-
     originalRows() {
       const rows = JSON.parse(JSON.stringify(this.rows));
       let nestedRows = [];
@@ -8974,42 +8746,39 @@ const _sfc_main = {
       let index = 0;
       nestedRows.forEach((headerRow) => {
         headerRow.children.forEach((row) => {
-          row.originalIndex = index++;
+          row.originalIndex = index;
+          index += 1;
         });
       });
-
       return nestedRows;
     },
-
     typedColumns() {
-      const columns = this.columns;
-      for (let i = 0; i < this.columns.length; i++) {
+      const { columns } = this;
+      for (let i = 0; i < this.columns.length; i += 1) {
         const column = columns[i];
         column.typeDef = this.dataTypes[column.type] || defaultType;
       }
       return columns;
     },
-
     hasRowClickListener() {
       return this.$attrs && this.$attrs['row-click'];
     },
   },
-
   methods: {
     //* we need to check for expanded row state here
     //* to maintain it when sorting/filtering
     handleExpanded(headerRow) {
-      if (this.maintainExpanded &&
-        this.expandedRowKeys.has(headerRow[this.rowKeyField])) {
-        headerRow['vgtIsExpanded'] = true;
+      if (this.maintainExpanded
+        && this.expandedRowKeys.has(headerRow[this.rowKeyField])) {
+        headerRow.vgtIsExpanded = true;
       } else {
-        headerRow['vgtIsExpanded'] = false;
+        headerRow.vgtIsExpanded = false;
       }
     },
     toggleExpand(id) {
-      const headerRow = this.filteredRows.find(r => r[this.rowKeyField] === id);
+      const headerRow = this.filteredRows.find((r) => r[this.rowKeyField] === id);
       if (headerRow) {
-        headerRow['vgtIsExpanded'] = !headerRow.vgtIsExpanded;
+        headerRow.vgtIsExpanded = !headerRow.vgtIsExpanded;
       }
       if (this.maintainExpanded
         && headerRow.vgtIsExpanded) {
@@ -9018,29 +8787,26 @@ const _sfc_main = {
         this.expandedRowKeys.delete(headerRow[this.rowKeyField]);
       }
     },
-
     expandAll() {
       this.filteredRows.forEach((row) => {
-        row['vgtIsExpanded'] = true;
+        row.vgtIsExpanded = true;
         if (this.maintainExpanded) {
           this.expandedRowKeys.add(row[this.rowKeyField]);
         }
       });
     },
-
     collapseAll() {
       this.filteredRows.forEach((row) => {
-        row['vgtIsExpanded'] = false;
+        row.vgtIsExpanded = false;
         this.expandedRowKeys.clear();
       });
     },
-
+    // eslint-disable-next-line consistent-return
     getColumnForField(field) {
       for (let i = 0; i < this.typedColumns.length; i += 1) {
         if (this.typedColumns[i].field === field) return this.typedColumns[i];
       }
     },
-
     handleSearch() {
       this.resetTable();
       // for remote mode, we need to emit search
@@ -9050,7 +8816,6 @@ const _sfc_main = {
         });
       }
     },
-
     reset() {
       this.initializeSort();
       this.changePage(1);
@@ -9059,25 +8824,21 @@ const _sfc_main = {
         this.$refs['table-header-secondary'].reset(true);
       }
     },
-
     emitSelectedRows() {
       this.$emit('select-all', {
         selected: this.selectedRowCount === this.totalRowCount,
         selectedRows: this.selectedRows,
       });
     },
-
     unselectAllInternal(forceAll) {
-      const rows =
-        this.selectAllByPage && !forceAll ? this.paginated : this.filteredRows;
-      rows.forEach((headerRow, i) => {
-        headerRow.children.forEach((row, j) => {
-          row['vgtSelected'] = false;
+      const rows = this.selectAllByPage && !forceAll ? this.paginated : this.filteredRows;
+      rows.forEach((headerRow) => {
+        headerRow.children.forEach((row) => {
+          row.vgtSelected = false;
         });
       });
       this.emitSelectedRows();
     },
-
     toggleSelectAll() {
       if (this.allSelected) {
         this.unselectAllInternal();
@@ -9086,21 +8847,19 @@ const _sfc_main = {
       const rows = this.selectAllByPage ? this.paginated : this.filteredRows;
       rows.forEach((headerRow) => {
         headerRow.children.forEach((row) => {
-          row['vgtSelected'] = true;
+          row.vgtSelected = true;
         });
       });
       this.emitSelectedRows();
     },
-
     toggleSelectGroup(event, headerRow) {
       headerRow.children.forEach((row) => {
-        row['vgtSelected'] = event;
+        row.vgtSelected = event;
       });
     },
-
     changePage(value) {
       const enabled = this.paginate;
-      let { paginationBottom, paginationTop } = this.$refs;
+      const { paginationBottom, paginationTop } = this.$refs;
       if (enabled) {
         if (this.paginateOnTop && paginationTop) {
           paginationTop.currentPage = value;
@@ -9113,7 +8872,6 @@ const _sfc_main = {
         this.currentPage = value;
       }
     },
-
     pageChangedEvent() {
       return {
         currentPage: this.currentPage,
@@ -9121,7 +8879,6 @@ const _sfc_main = {
         total: Math.floor(this.totalRowCount / this.currentPerPage),
       };
     },
-
     pageChanged(pagination) {
       this.currentPage = pagination.currentPage;
       if (!pagination.noEmit) {
@@ -9133,12 +8890,11 @@ const _sfc_main = {
         }
       }
     },
-
     perPageChanged(pagination) {
       this.currentPerPage = pagination.currentPerPage;
       // ensure that both sides of pagination are in agreement
       // this fixes changes during position = 'both'
-      let paginationPosition = this.paginationOptions.position;
+      const paginationPosition = this.paginationOptions.position;
       if (this.$refs.paginationTop && (paginationPosition === 'top' || paginationPosition === 'both')) {
         this.$refs.paginationTop.currentPerPage = this.currentPerPage;
       }
@@ -9152,14 +8908,11 @@ const _sfc_main = {
         this.$emit('update:isLoading', true);
       }
     },
-
     changeSort(sorts) {
       this.sorts = sorts;
       this.$emit('sort-change', sorts);
-
       // every time we change sort we need to reset to page 1
       this.changePage(1);
-
       // if the mode is remote, we don't need to do anything
       // after this. just set table loading to true
       if (this.mode === 'remote') {
@@ -9168,10 +8921,9 @@ const _sfc_main = {
       }
       this.sortChanged = true;
     },
-
     // checkbox click should always do the following
     onCheckboxClicked(row, index, event) {
-      row['vgtSelected'] = !row.vgtSelected;
+      row.vgtSelected = !row.vgtSelected;
       this.$emit('row-click', {
         row,
         pageIndex: index,
@@ -9179,7 +8931,6 @@ const _sfc_main = {
         event,
       });
     },
-
     onRowDoubleClicked(row, index, event) {
       this.$emit('row-dblclick', {
         row,
@@ -9188,10 +8939,9 @@ const _sfc_main = {
         event,
       });
     },
-
     onRowClicked(row, index, event) {
       if (this.selectable && !this.selectOnCheckboxOnly) {
-        row['vgtSelected'] = !row.vgtSelected;
+        row.vgtSelected = !row.vgtSelected;
       }
       this.$emit('row-click', {
         row,
@@ -9200,7 +8950,6 @@ const _sfc_main = {
         event,
       });
     },
-
     onRowAuxClicked(row, index, event) {
       this.$emit('row-aux-click', {
         row,
@@ -9209,7 +8958,6 @@ const _sfc_main = {
         event,
       });
     },
-
     onCellClicked(row, column, rowIndex, event) {
       this.$emit('cell-click', {
         row,
@@ -9218,21 +8966,18 @@ const _sfc_main = {
         event,
       });
     },
-
     onMouseenter(row, index) {
       this.$emit('row-mouseenter', {
         row,
         pageIndex: index,
       });
     },
-
     onMouseleave(row, index) {
       this.$emit('row-mouseleave', {
         row,
         pageIndex: index,
       });
     },
-
     searchTableOnEnter() {
       if (this.searchTrigger === 'enter') {
         this.handleSearch();
@@ -9243,29 +8988,26 @@ const _sfc_main = {
         this.sortChanged = true;
       }
     },
-
     searchTableOnKeyUp() {
       if (this.searchTrigger !== 'enter') {
         this.handleSearch();
       }
     },
-
     resetTable() {
       this.unselectAllInternal(true);
       // every time we searchTable
       this.changePage(1);
     },
-
     // field can be:
     // 1. function (passed as a string using function.name. For example: 'bound myFunction')
     // 2. regular property - ex: 'prop'
     // 3. nested property path - ex: 'nested.prop'
     collect(obj, field) {
       // utility function to get nested property
-      function dig(obj, selector) {
-        let result = obj;
+      function dig(o, selector) {
+        let result = o;
         const splitter = selector.split('.');
-        for (let i = 0; i < splitter.length; i++) {
+        for (let i = 0; i < splitter.length; i += 1) {
           if (typeof result === 'undefined' || result === null) {
             return undefined;
           }
@@ -9273,12 +9015,10 @@ const _sfc_main = {
         }
         return result;
       }
-
       if (typeof field === 'function') return field(obj);
       if (typeof field === 'string') return dig(obj, field);
       return undefined;
     },
-
     collectFormatted(obj, column, headerRow = false) {
       let value;
       if (headerRow && column.headerField) {
@@ -9287,13 +9027,11 @@ const _sfc_main = {
         value = this.collect(obj, column.field);
       }
       if (value === undefined) return '';
-
       // if user has supplied custom formatter,
       // use that here
       if (column.formatFn && typeof column.formatFn === 'function') {
         return column.formatFn(value, obj);
       }
-
       // lets format the resultant data
       let type = column.typeDef;
       // this will only happen if we try to collect formatted
@@ -9302,40 +9040,35 @@ const _sfc_main = {
       if (!type) {
         type = this.dataTypes[column.type] || defaultType;
       }
-
-      let result = type.format(value, column);
+      const result = type.format(value, column);
       // we must have some values in compact mode
-      if (this.compactMode && (result == '' || result == null)) return '-';
+      if (this.compactMode && (result === '' || result == null)) return '-';
       return result;
     },
-
     formattedRow(row, isHeaderRow = false) {
       const formattedRow = {};
-      for (let i = 0; i < this.typedColumns.length; i++) {
+      for (let i = 0; i < this.typedColumns.length; i += 1) {
         const col = this.typedColumns[i];
         // what happens if field is
         if (col.field) {
           formattedRow[col.field] = this.collectFormatted(
             row,
             col,
-            isHeaderRow
+            isHeaderRow,
           );
         }
       }
       return formattedRow;
     },
-
     // Get classes for the given column index & element.
     getClasses(index, element, row) {
       const { typeDef, [`${element}Class`]: custom } = this.typedColumns[index];
       let { isRight } = typeDef;
       if (this.rtl) isRight = true;
-
       const classes = {
         'vgt-right-align': isRight,
         'vgt-left-align': !isRight,
       };
-
       // for td we need to check if value is
       // a function.
       if (typeof custom === 'function') {
@@ -9345,16 +9078,14 @@ const _sfc_main = {
       }
       return classes;
     },
-
     // method to filter rows
     filterRows(columnFilters, fromFilter = true) {
       // if (!this.rows.length) return;
       // this is invoked either as a result of changing filters
       // or as a result of modifying rows.
       this.columnFilters = columnFilters;
-      let computedRows = JSON.parse(JSON.stringify(this.originalRows));
+      const computedRows = JSON.parse(JSON.stringify(this.originalRows));
       let instancesOfFiltering = false;
-
       // do we have a filter to care about?
       // if not we don't need to do anything
       if (this.columnFilters && Object.keys(this.columnFilters).length) {
@@ -9373,7 +9104,6 @@ const _sfc_main = {
             columnFilters: this.columnFilters,
           });
         }
-
         // if mode is remote, we don't do any filtering here.
         if (this.mode === 'remote') {
           if (fromFilter) {
@@ -9384,40 +9114,36 @@ const _sfc_main = {
           }
           return;
         }
-
         const fieldKey = (field) => {
-          if (typeof(field) === 'function' && field.name) {
+          if (typeof (field) === 'function' && field.name) {
             return field.name;
           }
           return field;
         };
-
-        for (let i = 0; i < this.typedColumns.length; i++) {
+        for (let i = 0; i < this.typedColumns.length; i += 1) {
           const col = this.typedColumns[i];
           if (this.columnFilters[fieldKey(col.field)]) {
-
             instancesOfFiltering = true;
             computedRows.forEach((headerRow) => {
               const newChildren = headerRow.children.filter((row) => {
                 // If column has a custom filter, use that.
                 if (
-                  col.filterOptions &&
-                  typeof col.filterOptions.filterFn === 'function'
+                  col.filterOptions
+                  && typeof col.filterOptions.filterFn === 'function'
                 ) {
                   return col.filterOptions.filterFn(
                     this.collect(row, col.field),
-                    this.columnFilters[fieldKey(col.field)]
+                    this.columnFilters[fieldKey(col.field)],
                   );
                 }
-
                 // Otherwise Use default filters
                 const { typeDef } = col;
                 return typeDef.filterPredicate(
                   this.collect(row, col.field),
                   this.columnFilters[fieldKey(col.field)],
                   false,
-                  col.filterOptions &&
-                    typeof col.filterOptions.filterDropdownItems === 'object'
+                  col.filterOptions
+                    && typeof col.filterOptions.filterDropdownItems === 'object',
                 );
               });
               // should we remove the header?
@@ -9426,14 +9152,12 @@ const _sfc_main = {
           }
         }
       }
-
       if (instancesOfFiltering) {
         this.filteredRows = computedRows.filter((h) => h.children && h.children.length);
       } else {
         this.filteredRows = computedRows;
       }
     },
-
     getCurrentIndex(rowId) {
       let index = 0;
       let found = false;
@@ -9454,7 +9178,6 @@ const _sfc_main = {
       }
       return ((this.currentPage - 1) * this.currentPerPage) + index + 1;
     },
-
     getRowStyleClass(row) {
       let classes = '';
       if (this.hasRowClickListener) classes += 'clickable';
@@ -9469,15 +9192,14 @@ const _sfc_main = {
       }
       return classes;
     },
-
     handleGrouped(originalRows) {
       originalRows.forEach((headerRow, i) => {
         headerRow.vgt_header_id = i;
         if (
-          this.groupOptions.maintainExpanded &&
-          this.expandedRowKeys.has(headerRow[this.groupOptions.rowKey])
+          this.groupOptions.maintainExpanded
+          && this.expandedRowKeys.has(headerRow[this.groupOptions.rowKey])
         ) {
-          headerRow['vgtIsExpanded'] = true;
+          headerRow.vgtIsExpanded = true;
         }
         headerRow.children.forEach((childRow) => {
           childRow.vgt_id = i;
@@ -9485,7 +9207,6 @@ const _sfc_main = {
       });
       return originalRows;
     },
-
     initializePagination() {
       const {
         enabled,
@@ -9504,15 +9225,12 @@ const _sfc_main = {
         mode,
         infoFn,
       } = this.paginationOptions;
-
       if (typeof enabled === 'boolean') {
         this.paginate = enabled;
       }
-
       if (typeof perPage === 'number') {
         this.perPage = perPage;
       }
-
       if (position === 'top') {
         this.paginateOnTop = true; // default is false
         this.paginateOnBottom = false; // default is true
@@ -9520,61 +9238,48 @@ const _sfc_main = {
         this.paginateOnTop = true;
         this.paginateOnBottom = true;
       }
-
       if (Array.isArray(perPageDropdown) && perPageDropdown.length) {
         this.customRowsPerPageDropdown = perPageDropdown;
         if (!this.perPage) {
           [this.perPage] = perPageDropdown;
         }
       }
-
       if (typeof perPageDropdownEnabled === 'boolean') {
         this.perPageDropdownEnabled = perPageDropdownEnabled;
       }
-
       if (typeof dropdownAllowAll === 'boolean') {
         this.paginateDropdownAllowAll = dropdownAllowAll;
       }
-
       if (typeof mode === 'string') {
         this.paginationMode = mode;
       }
-
       if (typeof nextLabel === 'string') {
         this.nextText = nextLabel;
       }
-
       if (typeof prevLabel === 'string') {
         this.prevText = prevLabel;
       }
-
       if (typeof rowsPerPageLabel === 'string') {
         this.rowsPerPageText = rowsPerPageLabel;
       }
-
       if (typeof ofLabel === 'string') {
         this.ofText = ofLabel;
       }
-
       if (typeof pageLabel === 'string') {
         this.pageText = pageLabel;
       }
-
       if (typeof allLabel === 'string') {
         this.allText = allLabel;
       }
-
       if (typeof setCurrentPage === 'number') {
         setTimeout(() => {
           this.changePage(setCurrentPage);
         }, 500);
       }
-
       if (typeof infoFn === 'function') {
         this.paginationInfoFn = infoFn;
       }
     },
-
     initializeSearch() {
       const {
         enabled,
@@ -9584,44 +9289,34 @@ const _sfc_main = {
         placeholder,
         skipDiacritics,
       } = this.searchOptions;
-
       if (typeof enabled === 'boolean') {
         this.searchEnabled = enabled;
       }
-
       if (trigger === 'enter') {
         this.searchTrigger = trigger;
       }
-
       if (typeof externalQuery === 'string') {
         this.externalSearchQuery = externalQuery;
       }
-
       if (typeof searchFn === 'function') {
         this.searchFn = searchFn;
       }
-
       if (typeof placeholder === 'string') {
         this.searchPlaceholder = placeholder;
       }
-
       if (typeof skipDiacritics === 'boolean') {
         this.searchSkipDiacritics = skipDiacritics;
       }
     },
-
     initializeSort() {
       const { enabled, initialSortBy, multipleColumns } = this.sortOptions;
       const initSortBy = JSON.parse(JSON.stringify(initialSortBy || {}));
-
       if (typeof enabled === 'boolean') {
         this.sortable = enabled;
       }
-
       if (typeof multipleColumns === 'boolean') {
         this.multipleColumnSort = multipleColumns;
       }
-
       //* initialSortBy can be an array or an object
       if (typeof initSortBy === 'object') {
         const ref = this.fixedHeader
@@ -9632,13 +9327,12 @@ const _sfc_main = {
         } else {
           const hasField = Object.prototype.hasOwnProperty.call(
             initSortBy,
-            'field'
+            'field',
           );
           if (hasField) ref.setInitialSort([initSortBy]);
         }
       }
     },
-
     initializeSelect() {
       const {
         enabled,
@@ -9650,53 +9344,44 @@ const _sfc_main = {
         disableSelectInfo,
         selectAllByGroup,
       } = this.selectOptions;
-
       if (typeof enabled === 'boolean') {
         this.selectable = enabled;
       }
-
       if (typeof selectOnCheckboxOnly === 'boolean') {
         this.selectOnCheckboxOnly = selectOnCheckboxOnly;
       }
-
       if (typeof selectAllByPage === 'boolean') {
         this.selectAllByPage = selectAllByPage;
       }
-
       if (typeof selectAllByGroup === 'boolean') {
         this.selectAllByGroup = selectAllByGroup;
       }
-
       if (typeof disableSelectInfo === 'boolean') {
         this.disableSelectInfo = disableSelectInfo;
       }
-
       if (typeof selectionInfoClass === 'string') {
         this.selectionInfoClass = selectionInfoClass;
       }
-
       if (typeof selectionText === 'string') {
         this.selectionText = selectionText;
       }
-
       if (typeof clearSelectionText === 'string') {
         this.clearSelectionText = clearSelectionText;
       }
     },
   },
-
   mounted() {
     if (this.perPage) {
       this.currentPerPage = this.perPage;
     }
     this.initializeSort();
   },
-
   components: {
-    'vgt-pagination': VgtPagination,
+    DtPagination,
     'vgt-global-search': VgtGlobalSearch,
     'vgt-header-row': VgtHeaderRow,
     'vgt-table-header': VgtTableHeader,
+    ExportButton,
   },
 };
 
@@ -9704,7 +9389,7 @@ const _hoisted_1 = {
   key: 0,
   class: "vgt-loading vgt-center-align"
 };
-const _hoisted_2 = /*#__PURE__*/createElementVNode("span", { class: "vgt-loading__content" }, " Loading... ", -1 /* HOISTED */);
+const _hoisted_2 = /*#__PURE__*/createElementVNode("span", { class: "vgt-loading__content" }, " Loading... ", -1);
 const _hoisted_3 = { class: "vgt-selection-info-row__actions vgt-pull-right" };
 const _hoisted_4 = { class: "vgt-fixed-header" };
 const _hoisted_5 = ["id"];
@@ -9721,20 +9406,21 @@ const _hoisted_12 = { key: 0 };
 const _hoisted_13 = ["innerHTML"];
 const _hoisted_14 = { key: 0 };
 const _hoisted_15 = ["colspan"];
-const _hoisted_16 = /*#__PURE__*/createElementVNode("div", { class: "vgt-center-align vgt-text-disabled" }, " No data for table ", -1 /* HOISTED */);
+const _hoisted_16 = /*#__PURE__*/createElementVNode("div", { class: "vgt-center-align vgt-text-disabled" }, " No data for table ", -1);
 const _hoisted_17 = {
-  key: 2,
+  key: 3,
   class: "vgt-wrap__actions-footer"
 };
 
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_vgt_pagination = resolveComponent("vgt-pagination");
+  const _component_dt_pagination = resolveComponent("dt-pagination");
+  const _component_export_button = resolveComponent("export-button");
   const _component_vgt_global_search = resolveComponent("vgt-global-search");
   const _component_vgt_table_header = resolveComponent("vgt-table-header");
   const _component_vgt_header_row = resolveComponent("vgt-header-row");
 
   return (openBlock(), createElementBlock("div", {
-    class: normalizeClass($options.wrapStyleClasses)
+    class: normalizeClass([$options.wrapStyleClasses, 'uk-margin-bottom uk-margin-top'])
   }, [
     ($props.isLoading)
       ? (openBlock(), createElementBlock("div", _hoisted_1, [
@@ -9742,7 +9428,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             _hoisted_2
           ])
         ]))
-      : createCommentVNode("v-if", true),
+      : createCommentVNode("", true),
     createElementVNode("div", {
       class: normalizeClass(["vgt-inner-wrap", {'is-loading': $props.isLoading}])
     }, [
@@ -9753,7 +9439,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             perPageChanged: $options.perPageChanged,
             total: $props.totalRows || $options.totalRowCount
           }, () => [
-            createVNode(_component_vgt_pagination, {
+            createVNode(_component_dt_pagination, {
               ref: "paginationTop",
               onPageChanged: $options.pageChanged,
               onPerPageChanged: $options.perPageChanged,
@@ -9771,9 +9457,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               pageText: _ctx.pageText,
               allText: _ctx.allText,
               "info-fn": _ctx.paginationInfoFn
-            }, null, 8 /* PROPS */, ["onPageChanged", "onPerPageChanged", "perPage", "rtl", "total", "mode", "nextText", "prevText", "rowsPerPageText", "perPageDropdownEnabled", "customRowsPerPageDropdown", "paginateDropdownAllowAll", "ofText", "pageText", "allText", "info-fn"])
+            }, null, 8, ["onPageChanged", "onPerPageChanged", "perPage", "rtl", "total", "mode", "nextText", "prevText", "rowsPerPageText", "perPageDropdownEnabled", "customRowsPerPageDropdown", "paginateDropdownAllowAll", "ofText", "pageText", "allText", "info-fn"])
           ])
-        : createCommentVNode("v-if", true),
+        : createCommentVNode("", true),
+      ($props.canExport)
+        ? (openBlock(), createBlock(_component_export_button, {
+            key: 1,
+            tableId: "vgt-table"
+          }))
+        : createCommentVNode("", true),
       createVNode(_component_vgt_global_search, {
         onKeyup: $options.searchTableOnKeyUp,
         onEnter: $options.searchTableOnEnter,
@@ -9781,7 +9473,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         onInput: _cache[0] || (_cache[0] = $event => (_ctx.globalSearchTerm = $event)),
         "search-enabled": _ctx.searchEnabled && _ctx.externalSearchQuery == null,
         "global-search-placeholder": _ctx.searchPlaceholder
-      }, createSlots({ _: 2 /* DYNAMIC */ }, [
+      }, createSlots({ _: 2 }, [
         (_ctx.$slots['table-actions'])
           ? {
               name: "internal-table-actions",
@@ -9790,38 +9482,37 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             }
           : undefined
-      ]), 1032 /* PROPS, DYNAMIC_SLOTS */, ["onKeyup", "onEnter", "value", "search-enabled", "global-search-placeholder"]),
+      ]), 1032, ["onKeyup", "onEnter", "value", "search-enabled", "global-search-placeholder"]),
       ($options.selectedRowCount && !_ctx.disableSelectInfo)
         ? (openBlock(), createElementBlock("div", {
-            key: 1,
+            key: 2,
             class: normalizeClass(["vgt-selection-info-row clearfix", _ctx.selectionInfoClass])
           }, [
-            createTextVNode(toDisplayString($options.selectionInfo) + " ", 1 /* TEXT */),
+            createTextVNode(toDisplayString($options.selectionInfo) + " ", 1),
             createElementVNode("a", {
               href: "",
               onClick: _cache[1] || (_cache[1] = withModifiers($event => ($options.unselectAllInternal(true)), ["prevent"]))
-            }, toDisplayString(_ctx.clearSelectionText), 1 /* TEXT */),
+            }, toDisplayString(_ctx.clearSelectionText), 1),
             createElementVNode("div", _hoisted_3, [
               renderSlot(_ctx.$slots, "selected-row-actions")
             ])
-          ], 2 /* CLASS */))
-        : createCommentVNode("v-if", true),
+          ], 2))
+        : createCommentVNode("", true),
       createElementVNode("div", _hoisted_4, [
         ($props.fixedHeader)
           ? (openBlock(), createElementBlock("table", {
               key: 0,
               id: "vgt-table",
-              class: normalizeClass($options.tableStyleClasses)
+              class: normalizeClass([$options.tableStyles, 'uk-table uk-table-divider uk-margin-remove-top'])
             }, [
               createElementVNode("colgroup", null, [
                 (openBlock(true), createElementBlock(Fragment, null, renderList($props.columns, (column, index) => {
                   return (openBlock(), createElementBlock("col", {
                     key: index,
                     id: `col-${index}`
-                  }, null, 8 /* PROPS */, _hoisted_5))
-                }), 128 /* KEYED_FRAGMENT */))
+                  }, null, 8, _hoisted_5))
+                }), 128))
               ]),
-              createCommentVNode(" Table header "),
               createVNode(_component_vgt_table_header, {
                 ref: "table-header-secondary",
                 onToggleSelectAll: $options.toggleSelectAll,
@@ -9845,7 +9536,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   renderSlot(_ctx.$slots, "table-column", {
                     column: slotProps.column
                   }, () => [
-                    createElementVNode("span", null, toDisplayString(slotProps.column.label), 1 /* TEXT */)
+                    createElementVNode("span", null, toDisplayString(slotProps.column.label), 1)
                   ])
                 ]),
                 "column-filter": withCtx((slotProps) => [
@@ -9854,10 +9545,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     updateFilters: slotProps.updateFilters
                   })
                 ]),
-                _: 3 /* FORWARDED */
-              }, 8 /* PROPS */, ["onToggleSelectAll", "onSortChange", "onFilterChanged", "columns", "line-numbers", "selectable", "all-selected", "all-selected-indeterminate", "mode", "sortable", "multiple-column-sort", "typed-columns", "getClasses", "searchEnabled", "paginated", "table-ref"])
-            ], 2 /* CLASS */))
-          : createCommentVNode("v-if", true)
+                _: 3
+              }, 8, ["onToggleSelectAll", "onSortChange", "onFilterChanged", "columns", "line-numbers", "selectable", "all-selected", "all-selected-indeterminate", "mode", "sortable", "multiple-column-sort", "typed-columns", "getClasses", "searchEnabled", "paginated", "table-ref"])
+            ], 2))
+          : createCommentVNode("", true)
       ]),
       createElementVNode("div", {
         class: normalizeClass({'vgt-responsive': $props.responsive}),
@@ -9866,17 +9557,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createElementVNode("table", {
           id: "vgt-table",
           ref: "table",
-          class: normalizeClass($options.tableStyles)
+          class: normalizeClass([$options.tableStyles, 'uk-table uk-table-divider uk-margin-remove-top'])
         }, [
           createElementVNode("colgroup", null, [
             (openBlock(true), createElementBlock(Fragment, null, renderList($props.columns, (column, index) => {
               return (openBlock(), createElementBlock("col", {
                 key: index,
                 id: `col-${index}`
-              }, null, 8 /* PROPS */, _hoisted_6))
-            }), 128 /* KEYED_FRAGMENT */))
+              }, null, 8, _hoisted_6))
+            }), 128))
           ]),
-          createCommentVNode(" Table header "),
           createVNode(_component_vgt_table_header, {
             ref: "table-header-primary",
             onToggleSelectAll: $options.toggleSelectAll,
@@ -9898,7 +9588,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               renderSlot(_ctx.$slots, "table-column", {
                 column: slotProps.column
               }, () => [
-                createElementVNode("span", null, toDisplayString(slotProps.column.label), 1 /* TEXT */)
+                createElementVNode("span", null, toDisplayString(slotProps.column.label), 1)
               ])
             ]),
             "column-filter": withCtx((slotProps) => [
@@ -9907,12 +9597,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 updateFilters: slotProps.updateFilters
               })
             ]),
-            _: 3 /* FORWARDED */
-          }, 8 /* PROPS */, ["onToggleSelectAll", "onSortChange", "onFilterChanged", "columns", "line-numbers", "selectable", "all-selected", "all-selected-indeterminate", "mode", "sortable", "multiple-column-sort", "typed-columns", "getClasses", "searchEnabled"]),
-          createCommentVNode(" Table body starts here "),
+            _: 3
+          }, 8, ["onToggleSelectAll", "onSortChange", "onFilterChanged", "columns", "line-numbers", "selectable", "all-selected", "all-selected-indeterminate", "mode", "sortable", "multiple-column-sort", "typed-columns", "getClasses", "searchEnabled"]),
           (openBlock(true), createElementBlock(Fragment, null, renderList($options.paginated, (headerRow, hIndex) => {
             return (openBlock(), createElementBlock("tbody", { key: hIndex }, [
-              createCommentVNode(" if group row header is at the top "),
               ($options.groupHeaderOnTop)
                 ? (openBlock(), createBlock(_component_vgt_header_row, {
                     key: 0,
@@ -9930,7 +9618,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     "full-colspan": $options.fullColspan,
                     groupIndex: hIndex,
                     onSelectGroupChange: $event => ($options.toggleSelectGroup($event, headerRow))
-                  }, createSlots({ _: 2 /* DYNAMIC */ }, [
+                  }, createSlots({ _: 2 }, [
                     ($options.hasHeaderRowTemplate)
                       ? {
                           name: "table-header-row",
@@ -9943,9 +9631,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           ])
                         }
                       : undefined
-                  ]), 1032 /* PROPS, DYNAMIC_SLOTS */, ["onVgtExpand", "header-row", "columns", "line-numbers", "selectable", "select-all-by-group", "collapsable", "collect-formatted", "formatted-row", "class", "get-classes", "full-colspan", "groupIndex", "onSelectGroupChange"]))
-                : createCommentVNode("v-if", true),
-              createCommentVNode(" normal rows here. we loop over all rows "),
+                  ]), 1032, ["onVgtExpand", "header-row", "columns", "line-numbers", "selectable", "select-all-by-group", "collapsable", "collect-formatted", "formatted-row", "class", "get-classes", "full-colspan", "groupIndex", "onSelectGroupChange"]))
+                : createCommentVNode("", true),
               (openBlock(true), createElementBlock(Fragment, null, renderList(headerRow.children, (row, index) => {
                 return (openBlock(), createElementBlock(Fragment, null, [
                   ($props.groupOptions.collapsable ? headerRow.vgtIsExpanded : true)
@@ -9959,8 +9646,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         onAuxclick: $event => ($options.onRowAuxClicked(row, index, $event))
                       }, [
                         ($props.lineNumbers)
-                          ? (openBlock(), createElementBlock("th", _hoisted_8, toDisplayString($options.getCurrentIndex(row.originalIndex)), 1 /* TEXT */))
-                          : createCommentVNode("v-if", true),
+                          ? (openBlock(), createElementBlock("th", _hoisted_8, toDisplayString($options.getCurrentIndex(row.originalIndex)), 1))
+                          : createCommentVNode("", true),
                         (_ctx.selectable)
                           ? (openBlock(), createElementBlock("th", {
                               key: 1,
@@ -9971,9 +9658,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                                 type: "checkbox",
                                 disabled: row.vgtDisabled,
                                 checked: row.vgtSelected
-                              }, null, 8 /* PROPS */, _hoisted_10)
-                            ], 8 /* PROPS */, _hoisted_9))
-                          : createCommentVNode("v-if", true),
+                              }, null, 8, _hoisted_10)
+                            ], 8, _hoisted_9))
+                          : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($props.columns, (column, i) => {
                           return (openBlock(), createElementBlock(Fragment, null, [
                             (!column.hidden && column.field)
@@ -9990,21 +9677,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                                     index: index
                                   }, () => [
                                     (!column.html)
-                                      ? (openBlock(), createElementBlock("span", _hoisted_12, toDisplayString($options.collectFormatted(row, column)), 1 /* TEXT */))
+                                      ? (openBlock(), createElementBlock("span", _hoisted_12, toDisplayString($options.collectFormatted(row, column)), 1))
                                       : (openBlock(), createElementBlock("span", {
                                           key: 1,
                                           innerHTML: $options.collect(row, column.field)
-                                        }, null, 8 /* PROPS */, _hoisted_13))
+                                        }, null, 8, _hoisted_13))
                                   ])
-                                ], 10 /* CLASS, PROPS */, _hoisted_11))
-                              : createCommentVNode("v-if", true)
-                          ], 64 /* STABLE_FRAGMENT */))
-                        }), 256 /* UNKEYED_FRAGMENT */))
-                      ], 42 /* CLASS, PROPS, HYDRATE_EVENTS */, _hoisted_7))
-                    : createCommentVNode("v-if", true)
-                ], 64 /* STABLE_FRAGMENT */))
-              }), 256 /* UNKEYED_FRAGMENT */)),
-              createCommentVNode(" if group row header is at the bottom "),
+                                ], 10, _hoisted_11))
+                              : createCommentVNode("", true)
+                          ], 64))
+                        }), 256))
+                      ], 42, _hoisted_7))
+                    : createCommentVNode("", true)
+                ], 64))
+              }), 256)),
               ($options.groupHeaderOnBottom)
                 ? (openBlock(), createBlock(_component_vgt_header_row, {
                     key: 1,
@@ -10019,7 +9705,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     "full-colspan": $options.fullColspan,
                     groupIndex: _ctx.index,
                     onSelectGroupChange: $event => ($options.toggleSelectGroup($event, headerRow))
-                  }, createSlots({ _: 2 /* DYNAMIC */ }, [
+                  }, createSlots({ _: 2 }, [
                     ($options.hasHeaderRowTemplate)
                       ? {
                           name: "table-header-row",
@@ -10032,10 +9718,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           ])
                         }
                       : undefined
-                  ]), 1032 /* PROPS, DYNAMIC_SLOTS */, ["header-row", "columns", "line-numbers", "selectable", "select-all-by-group", "collect-formatted", "formatted-row", "get-classes", "full-colspan", "groupIndex", "onSelectGroupChange"]))
-                : createCommentVNode("v-if", true)
+                  ]), 1032, ["header-row", "columns", "line-numbers", "selectable", "select-all-by-group", "collect-formatted", "formatted-row", "get-classes", "full-colspan", "groupIndex", "onSelectGroupChange"]))
+                : createCommentVNode("", true)
             ]))
-          }), 128 /* KEYED_FRAGMENT */)),
+          }), 128)),
           ($options.showEmptySlot)
             ? (openBlock(), createElementBlock("tbody", _hoisted_14, [
                 createElementVNode("tr", null, [
@@ -10043,25 +9729,25 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     renderSlot(_ctx.$slots, "emptystate", {}, () => [
                       _hoisted_16
                     ])
-                  ], 8 /* PROPS */, _hoisted_15)
+                  ], 8, _hoisted_15)
                 ])
               ]))
-            : createCommentVNode("v-if", true)
-        ], 2 /* CLASS */)
-      ], 6 /* CLASS, STYLE */),
+            : createCommentVNode("", true)
+        ], 2)
+      ], 6),
       ($options.hasFooterSlot)
         ? (openBlock(), createElementBlock("div", _hoisted_17, [
             renderSlot(_ctx.$slots, "table-actions-bottom")
           ]))
-        : createCommentVNode("v-if", true),
+        : createCommentVNode("", true),
       (_ctx.paginate && _ctx.paginateOnBottom)
         ? renderSlot(_ctx.$slots, "pagination-bottom", {
-            key: 3,
+            key: 4,
             pageChanged: $options.pageChanged,
             perPageChanged: $options.perPageChanged,
             total: $props.totalRows || $options.totalRowCount
           }, () => [
-            createVNode(_component_vgt_pagination, {
+            createVNode(_component_dt_pagination, {
               ref: "paginationBottom",
               onPageChanged: $options.pageChanged,
               onPerPageChanged: $options.perPageChanged,
@@ -10079,18 +9765,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               pageText: _ctx.pageText,
               allText: _ctx.allText,
               "info-fn": _ctx.paginationInfoFn
-            }, null, 8 /* PROPS */, ["onPageChanged", "onPerPageChanged", "perPage", "rtl", "total", "mode", "nextText", "prevText", "rowsPerPageText", "perPageDropdownEnabled", "customRowsPerPageDropdown", "paginateDropdownAllowAll", "ofText", "pageText", "allText", "info-fn"])
+            }, null, 8, ["onPageChanged", "onPerPageChanged", "perPage", "rtl", "total", "mode", "nextText", "prevText", "rowsPerPageText", "perPageDropdownEnabled", "customRowsPerPageDropdown", "paginateDropdownAllowAll", "ofText", "pageText", "allText", "info-fn"])
           ])
-        : createCommentVNode("v-if", true)
-    ], 2 /* CLASS */)
-  ], 2 /* CLASS */))
+        : createCommentVNode("", true)
+    ], 2)
+  ], 2))
 }
-var VueGoodTable = /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render]]);
+var DataTable = /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render]]);
 
-var index = {
-  install: (app, options) => {
-    app.component('VueGoodTable', VueGoodTable);
-  }
-};
-
-export { VueGoodTable, index as default };
+export { DataTable };
