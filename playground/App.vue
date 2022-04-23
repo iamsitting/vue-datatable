@@ -7,7 +7,7 @@
     <button class="uk-button uk-button-small" @click="setFilter">SetFilter</button>
     <button class="uk-button uk-button-small" @click="changePage">Change Page</button>
     <input type="text" v-model="searchTerm">
-    <vue-good-table ref="my-table" v-on:column-filter="onColumnFilter" v-on:select-all="onSelectAll"
+    <data-table ref="my-table" v-on:column-filter="onColumnFilter" v-on:select-all="onSelectAll"
       v-on:sort-change="onSortChange" v-on:page-change="onPageChange" v-on:per-page-change="onPerPageChange"
       v-on:search="onSearch" v-on:selected-rows-change="onSelectChanged" :columns="columns" :rows="rows"
       :pagination-options="paginationOptions" :select-options="{
@@ -21,7 +21,7 @@
   enabled: true,
   skipDiacritics: true,
 }">
-    </vue-good-table>
+    </data-table>
     <h3>Remote Table</h3>
     <remote-table />
     <h3>Grouped Table</h3>
@@ -32,7 +32,7 @@
 <script>
 import GroupedTable from './grouped-table.vue';
 import RemoteTable from './remote-table.vue';
-
+import DataTable from '../src/components/DataTable.vue'
 export default {
   name: 'test',
   data() {
@@ -414,6 +414,7 @@ export default {
   components: {
     'grouped-table': GroupedTable,
     RemoteTable,
+    DataTable,
   },
 };
 </script>

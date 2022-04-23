@@ -36,7 +36,7 @@ const compare = (x: any, y: any, column?: Column) => {
 };
 
 const dateFormat = (v: any, column: Column) => {
-  if (v === undefined || v === null) return '';
+  if (v === undefined || v === null || v === '') return '';
   // convert to date
   const dt = parse(v, column.dateInputFormat, new Date());
   if (isValid(dt)) {
