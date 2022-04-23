@@ -1,6 +1,6 @@
 {
   "name": "@iamsitting/vue-datatable",
-  "version": "0.0.1",
+  "version": "3.0.0-rc.1",
   "description": "A datatable written in vue3",
   "main": "dist/index.es.js",
   "author": {
